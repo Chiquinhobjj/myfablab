@@ -30,7 +30,7 @@ services:
       # Traefik labels para proxy reverso
       - "traefik.enable=true"
       - "traefik.http.routers.myfablab.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.myfablab.entrypoints=websecure"
+      - "traefik.http.routers.myfablab.entrypoints=web,websecure"
       - "traefik.http.routers.myfablab.tls.certresolver=letsencrypt"
       - "traefik.http.services.myfablab.loadbalancer.server.port=80"
       # Middlewares de segurança
