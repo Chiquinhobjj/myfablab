@@ -1,0 +1,35 @@
+# Configuração do Prometheus para monitoramento
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'myfablab-monitor'
+    environment: 'production'
+
+scrape_configs:
+  # Monitoramento do Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['web:8080']
+    metrics_path: '/metrics'
+    
+  # Monitoramento do Node Exporter (métricas do sistema)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+      
+  # Monitoramento do próprio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+# Regras de alerta
+rule_files:
+  - 'alerts.yml'
+
+# Configuração do Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']

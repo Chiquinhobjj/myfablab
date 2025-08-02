@@ -1,0 +1,71 @@
+# Regras de alerta para o Prometheus
+
+groups:
+  - name: myfablab_alerts
+    interval: 30s
+    rules:
+      # Alerta quando o site está fora do ar
+      - alert: SiteDown
+        expr: up{job="nginx"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: myfablab
+        annotations:
+          summary: "MyFabLab está fora do ar"
+          description: "O site {{ $labels.instance }} está inacessível por mais de 2 minutos."
+
+      # Alto uso de CPU
+      - alert: HighCPUUsage
+        expr: rate(process_cpu_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          service: myfablab
+        annotations:
+          summary: "Alto uso de CPU detectado"
+          description: "CPU usage está acima de 80% por mais de 5 minutos."
+
+      # Alto uso de memória
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: myfablab
+        annotations:
+          summary: "Alto uso de memória"
+          description: "Uso de memória está acima de 85% em {{ $labels.instance }}."
+
+      # Muitos erros 5xx
+      - alert: High5xxErrors
+        expr: rate(nginx_http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: myfablab
+        annotations:
+          summary: "Muitos erros 5xx"
+          description: "Taxa de erros 5xx está acima de 5% nos últimos 5 minutos."
+
+      # Certificado SSL expirando
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 7 * 24 * 3600
+        for: 1h
+        labels:
+          severity: warning
+          service: myfablab
+        annotations:
+          summary: "Certificado SSL expirando"
+          description: "O certificado SSL expira em menos de 7 dias."
+
+      # Espaço em disco baixo
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 10m
+        labels:
+          severity: warning
+          service: myfablab
+        annotations:
+          summary: "Espaço em disco baixo"
+          description: "Menos de 15% de espaço livre em disco em {{ $labels.instance }}."

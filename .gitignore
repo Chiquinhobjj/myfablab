@@ -1,0 +1,54 @@
+# Environment variables
+.env
+.env.local
+.env.production
+.env.*
+
+# Backup do app duplicado
+app_1.js
+
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+
+# Backup files
+*.backup
+*.bak
+backup/
+
+# Monitoring
+logs/
+*.log
+coverage/
+
+# Docker volumes (local development)
+volumes/
+data/
