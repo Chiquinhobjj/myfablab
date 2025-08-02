@@ -8,7 +8,7 @@ RUN apk add --no-cache nginx gettext
 WORKDIR /app
 
 # Copiar arquivos estáticos
-COPY ai-pure-chat/ ./public/
+COPY index.html app.js style.css ./public/
 COPY nginx.conf /etc/nginx/nginx.conf.template
 COPY security-headers.conf /etc/nginx/security-headers.conf
 COPY entrypoint.sh /entrypoint.sh
