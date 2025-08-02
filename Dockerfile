@@ -28,23 +28,20 @@ COPY --from=builder /etc/nginx/nginx.conf.template /etc/nginx/nginx.conf.templat
 COPY --from=builder /etc/nginx/security-headers.conf /etc/nginx/security-headers.conf
 COPY --from=builder /entrypoint.sh /entrypoint.sh
 
-# Criar usuário não-root
-RUN adduser -D -g 'nginx' nginx-user && \
-    chown -R nginx-user:nginx-user /usr/share/nginx/html && \
-    chown -R nginx-user:nginx-user /var/cache/nginx && \
-    chown -R nginx-user:nginx-user /var/log/nginx && \
+# Garantir permissões corretas
+RUN chmod -R 755 /usr/share/nginx/html && \
     touch /var/run/nginx.pid && \
-    chown -R nginx-user:nginx-user /var/run/nginx.pid
+    chmod 644 /var/run/nginx.pid
 
 # Expor porta
-EXPOSE 8080
+EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8080/health || exit 1
+    CMD curl -f http://localhost/health || exit 1
 
-# Executar como usuário não-root
-USER nginx-user
+# Comentado para resolver problema de permissões
+# USER nginx-user
 
 # Usar entrypoint customizado
 ENTRYPOINT ["/entrypoint.sh"]
