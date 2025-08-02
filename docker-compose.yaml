@@ -5,7 +5,7 @@ version: '3.8'
 
 services:
   web:
-    image: ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_SHA:-latest}
+    build: .
     container_name: myfablab-web
     restart: unless-stopped
     expose:
