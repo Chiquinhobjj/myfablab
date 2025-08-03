@@ -993,13 +993,13 @@
 <body>
     <div class="app-container">
         <!-- Overlay for mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
         
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2 class="sidebar-title">MyFabLab AI</h2>
-                <button class="close-sidebar" onclick="toggleSidebar()">
+                <button class="close-sidebar" id="closeSidebarBtn">
                     ✕
                 </button>
             </div>
@@ -1066,7 +1066,7 @@
         <main class="main-content">
             <!-- Header -->
             <header class="header">
-                <button class="menu-toggle" onclick="toggleSidebar()">
+                <button class="menu-toggle" id="menuToggleBtn">
                     ☰
                 </button>
                 <div class="logo">
@@ -1096,7 +1096,7 @@
                                 autocomplete="off"
                                 autofocus
                             >
-                            <button class="send-button" id="sendButton" onclick="sendMessage()">
+                            <button class="send-button" id="sendButton">
                                 Enviar
                                 <span>→</span>
                             </button>
@@ -1107,7 +1107,7 @@
                     <div class="quick-actions">
                         <div class="actions-header">
                             <h2 class="actions-title">Ações Rápidas</h2>
-                            <button class="expand-button" onclick="toggleExpand()">
+                            <button class="expand-button" id="expandButton">
                                 <span>Mostrar mais</span>
                                 <span class="expand-icon">▼</span>
                             </button>
@@ -1115,7 +1115,7 @@
                         
                         <div class="actions-grid" id="actionsGrid">
                             <!-- Primeiras 4 ações sempre visíveis -->
-                            <div class="action-card" onclick="quickAction('criar-design')">
+                            <div class="action-card" data-action="criar-design">
                                 <span class="action-icon">🎨</span>
                                 <div class="action-content">
                                     <div class="action-title">Criar Design</div>
@@ -1123,7 +1123,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('suporte-tecnico')">
+                            <div class="action-card" data-action="suporte-tecnico">
                                 <span class="action-icon">🔧</span>
                                 <div class="action-content">
                                     <div class="action-title">Suporte Técnico</div>
@@ -1131,7 +1131,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('tutoriais')">
+                            <div class="action-card" data-action="tutoriais">
                                 <span class="action-icon">📚</span>
                                 <div class="action-content">
                                     <div class="action-title">Tutoriais</div>
@@ -1139,7 +1139,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('ideias-projeto')">
+                            <div class="action-card" data-action="ideias-projeto">
                                 <span class="action-icon">💡</span>
                                 <div class="action-content">
                                     <div class="action-title">Ideias de Projeto</div>
@@ -1148,7 +1148,7 @@
                             </div>
                             
                             <!-- Ações adicionais (ocultas inicialmente) -->
-                            <div class="action-card" onclick="quickAction('impressao-3d')">
+                            <div class="action-card" data-action="impressao-3d">
                                 <span class="action-icon">🖨️</span>
                                 <div class="action-content">
                                     <div class="action-title">Impressão 3D</div>
@@ -1156,7 +1156,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('eletronica')">
+                            <div class="action-card" data-action="eletronica">
                                 <span class="action-icon">⚡</span>
                                 <div class="action-content">
                                     <div class="action-title">Eletrônica</div>
@@ -1164,7 +1164,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('marcenaria')">
+                            <div class="action-card" data-action="marcenaria">
                                 <span class="action-icon">🪚</span>
                                 <div class="action-content">
                                     <div class="action-title">Marcenaria</div>
@@ -1172,7 +1172,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('corte-laser')">
+                            <div class="action-card" data-action="corte-laser">
                                 <span class="action-icon">🎯</span>
                                 <div class="action-content">
                                     <div class="action-title">Corte a Laser</div>
@@ -1180,7 +1180,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('colaborar')">
+                            <div class="action-card" data-action="colaborar">
                                 <span class="action-icon">🤝</span>
                                 <div class="action-content">
                                     <div class="action-title">Colaborar</div>
@@ -1188,7 +1188,7 @@
                                 </div>
                             </div>
                             
-                            <div class="action-card" onclick="quickAction('agendar-visita')">
+                            <div class="action-card" data-action="agendar-visita">
                                 <span class="action-icon">📅</span>
                                 <div class="action-content">
                                     <div class="action-title">Agendar Visita</div>
@@ -1201,7 +1201,7 @@
                     <!-- Seletor de Modelo -->
                     <div class="model-selector-container" style="margin-top: 20px;">
                         <div class="model-selector-label">Modelo de IA</div>
-                        <button class="model-selector" onclick="toggleModelDropdown()">
+                        <button class="model-selector" id="modelSelectorBtn">
                             <span id="selectedModel">Llama 3.2 3B</span>
                             <span style="font-size: 12px;">▼</span>
                         </button>
@@ -1252,14 +1252,14 @@
                             <div class="gpt-description">Design de interfaces e experiências</div>
                         </div>
                     </div>
-                    <div class="gpt-card" onclick="useGPT('teacher')">
+                    <div class="gpt-card" data-gpt="teacher">
                         <div class="gpt-icon">🎓</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Professor</div>
                             <div class="gpt-description">Explicações didáticas e tutoriais</div>
                         </div>
                     </div>
-                    <div class="gpt-card" onclick="useGPT('marketing')">
+                    <div class="gpt-card" data-gpt="marketing">
                         <div class="gpt-icon">📢</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Marketing Digital</div>
@@ -1318,10 +1318,13 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing MyFabLab AI...');
             populateModelDropdown();
             setupEventListeners();
             updateGreeting();
             setupInputEffects();
+            setupClickHandlers();
+            console.log('MyFabLab AI initialized successfully');
         });
 
         // Toggle sidebar
@@ -1356,7 +1359,8 @@
                     <div class="model-group-title">${group.group}</div>
                     ${group.items.map(model => `
                         <div class="model-option ${model.id === selectedModelId ? 'selected' : ''}" 
-                             onclick="selectModel('${model.id}', '${model.name}')">
+                             data-model-id="${model.id}"
+                             data-model-name="${model.name}">
                             <div>
                                 <div class="model-name">${model.name}</div>
                                 <div class="model-description">${model.desc}</div>
@@ -1365,6 +1369,15 @@
                     `).join('')}
                 </div>
             `).join('');
+            
+            // Add click handlers to model options
+            dropdown.querySelectorAll('.model-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const modelId = option.dataset.modelId;
+                    const modelName = option.dataset.modelName;
+                    selectModel(modelId, modelName);
+                });
+            });
         }
 
         // Select model
@@ -1448,8 +1461,10 @@
 
         // Send message
         async function sendMessage() {
+            console.log('sendMessage called');
             const input = document.getElementById('searchInput');
             const content = input.value.trim();
+            console.log('Message content:', content);
             if (!content) return;
 
             // Hide welcome screen if visible
@@ -1474,6 +1489,8 @@
             showTyping();
 
             try {
+                console.log('Sending to API:', API_URL);
+                console.log('Selected model:', selectedModelId);
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -1487,19 +1504,24 @@
                     })
                 });
 
+                console.log('API response status:', response.status);
                 hideTyping();
 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API error:', errorText);
                     throw new Error(`HTTP ${response.status}`);
                 }
 
                 const data = await response.json();
+                console.log('API response data:', data);
                 const aiResponse = data.choices[0].message.content;
                 
                 addMessage(aiResponse, 'assistant');
                 messages.push({ role: 'assistant', content: aiResponse });
 
             } catch (error) {
+                console.error('Error in sendMessage:', error);
                 hideTyping();
                 addMessage('Desculpe, ocorreu um erro. Tente novamente.', 'assistant');
             }
@@ -1509,6 +1531,79 @@
         function showGPTSection() {
             const gptsSection = document.getElementById('gptsSection');
             gptsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Setup all click handlers
+        function setupClickHandlers() {
+            console.log('Setting up click handlers...');
+            
+            // Send button
+            const sendBtn = document.getElementById('sendButton');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendMessage);
+                console.log('Send button handler added');
+            }
+            
+            // Model selector button
+            const modelBtn = document.getElementById('modelSelectorBtn');
+            if (modelBtn) {
+                modelBtn.addEventListener('click', toggleModelDropdown);
+                console.log('Model selector handler added');
+            }
+            
+            // Menu toggle
+            const menuBtn = document.getElementById('menuToggleBtn');
+            if (menuBtn) {
+                menuBtn.addEventListener('click', toggleSidebar);
+                console.log('Menu toggle handler added');
+            }
+            
+            // Close sidebar
+            const closeBtn = document.getElementById('closeSidebarBtn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', toggleSidebar);
+            }
+            
+            // Sidebar overlay
+            const overlay = document.getElementById('sidebarOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', toggleSidebar);
+            }
+            
+            // Expand button
+            const expandBtn = document.getElementById('expandButton');
+            if (expandBtn) {
+                expandBtn.addEventListener('click', toggleExpand);
+            }
+            
+            // GPT section link
+            const gptLink = document.getElementById('gptSectionLink');
+            if (gptLink) {
+                gptLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showGPTSection();
+                });
+            }
+            
+            // Action cards
+            document.querySelectorAll('.action-card[data-action]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const action = card.dataset.action;
+                    console.log('Action clicked:', action);
+                    quickAction(action);
+                });
+            });
+            
+            // GPT cards
+            document.querySelectorAll('.gpt-card[data-gpt]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const gptType = card.dataset.gpt;
+                    console.log('GPT clicked:', gptType);
+                    useGPT(gptType);
+                });
+            });
+            
+            console.log('Click handlers setup complete');
         }
 
         // Use GPT
