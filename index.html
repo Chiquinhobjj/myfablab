@@ -773,7 +773,7 @@
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
             max-height: 400px;
             overflow-y: auto;
-            z-index: 100;
+            z-index: 9999;
         }
 
         .model-dropdown.show {
@@ -1224,28 +1224,28 @@
                     <p class="gpts-subtitle">Assistentes especializados para suas tarefas</p>
                 </div>
                 <div class="gpts-grid">
-                    <div class="gpt-card" onclick="useGPT('developer')">
+                    <div class="gpt-card" data-gpt="developer">
                         <div class="gpt-icon">💻</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Desenvolvedor Web</div>
                             <div class="gpt-description">Crie sites e aplicações modernas</div>
                         </div>
                     </div>
-                    <div class="gpt-card" onclick="useGPT('writer')">
+                    <div class="gpt-card" data-gpt="writer">
                         <div class="gpt-icon">✍️</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Escritor Criativo</div>
                             <div class="gpt-description">Textos, artigos e conteúdo criativo</div>
                         </div>
                     </div>
-                    <div class="gpt-card" onclick="useGPT('analyst')">
+                    <div class="gpt-card" data-gpt="analyst">
                         <div class="gpt-icon">📊</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Analista de Dados</div>
                             <div class="gpt-description">Análises e visualizações de dados</div>
                         </div>
                     </div>
-                    <div class="gpt-card" onclick="useGPT('designer')">
+                    <div class="gpt-card" data-gpt="designer">
                         <div class="gpt-icon">🎨</div>
                         <div class="gpt-info">
                             <div class="gpt-name">Designer UI/UX</div>
@@ -1348,7 +1348,26 @@
 
         // Toggle model dropdown
         function toggleModelDropdown() {
-            document.getElementById('modelDropdown').classList.toggle('show');
+            console.log('toggleModelDropdown called');
+            const dropdown = document.getElementById('modelDropdown');
+            dropdown.classList.toggle('show');
+            console.log('Dropdown classes:', dropdown.className);
+            
+            // Close dropdown when clicking outside
+            if (dropdown.classList.contains('show')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeDropdownOnClickOutside);
+                }, 100);
+            }
+        }
+        
+        function closeDropdownOnClickOutside(e) {
+            const dropdown = document.getElementById('modelDropdown');
+            const button = document.getElementById('modelSelectorBtn');
+            if (!dropdown.contains(e.target) && !button.contains(e.target)) {
+                dropdown.classList.remove('show');
+                document.removeEventListener('click', closeDropdownOnClickOutside);
+            }
         }
 
         // Populate model dropdown
@@ -1382,10 +1401,12 @@
 
         // Select model
         function selectModel(modelId, modelName) {
+            console.log('selectModel called:', modelId, modelName);
             selectedModelId = modelId;
             document.getElementById('selectedModel').textContent = modelName;
-            toggleModelDropdown();
+            document.getElementById('modelDropdown').classList.remove('show');
             populateModelDropdown();
+            console.log('Model selected:', selectedModelId);
         }
 
         // Setup event listeners
