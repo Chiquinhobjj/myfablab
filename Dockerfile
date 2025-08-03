@@ -11,6 +11,7 @@ COPY style.css /usr/share/nginx/html/
 COPY fix-styles.css /usr/share/nginx/html/
 COPY fix-app.js /usr/share/nginx/html/
 COPY health.html /usr/share/nginx/html/health
+COPY deploy-check.txt /usr/share/nginx/html/
 
 # Copiar diretórios
 COPY config/ /usr/share/nginx/html/config/
