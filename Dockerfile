@@ -17,8 +17,19 @@ RUN apk add --no-cache nodejs npm curl
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY security-headers.conf /etc/nginx/security-headers.conf
 
-# Copiar arquivos públicos para o nginx
-COPY public/ /usr/share/nginx/html/
+# Copiar arquivos estáticos para o nginx
+COPY index.html /usr/share/nginx/html/
+COPY fix-app.js /usr/share/nginx/html/
+COPY fix-styles.css /usr/share/nginx/html/
+COPY emergency.html /usr/share/nginx/html/
+COPY index-*.html /usr/share/nginx/html/
+COPY admin.html /usr/share/nginx/html/
+COPY style.css /usr/share/nginx/html/
+COPY app.js /usr/share/nginx/html/
+COPY sw.js /usr/share/nginx/html/
+COPY config/ /usr/share/nginx/html/config/
+COPY components/ /usr/share/nginx/html/components/
+COPY styles/ /usr/share/nginx/html/styles/
 
 # Copiar backend
 COPY --from=builder /app/backend/node_modules /app/backend/node_modules
