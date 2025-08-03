@@ -1316,8 +1316,8 @@
             content: 'Você é um assistente AI útil. Responda em português de forma clara e amigável.'
         }];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
+        // Initialize - Usando múltiplas estratégias para garantir que funcione
+        function initializeApp() {
             console.log('Initializing MyFabLab AI...');
             populateModelDropdown();
             setupEventListeners();
@@ -1325,8 +1325,34 @@
             setupInputEffects();
             setupClickHandlers();
             console.log('MyFabLab AI initialized successfully');
+        }
+        
+        // Tentar inicializar de várias formas para garantir
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            // DOM já carregado
+            initializeApp();
+        }
+        
+        // Fallback para garantir
+        window.addEventListener('load', () => {
+            if (!window.appInitialized) {
+                window.appInitialized = true;
+                initializeApp();
+            }
         });
 
+        // Tornar funções globais para garantir acesso
+        window.toggleSidebar = toggleSidebar;
+        window.toggleModelDropdown = toggleModelDropdown;
+        window.sendMessage = sendMessage;
+        window.selectModel = selectModel;
+        window.quickAction = quickAction;
+        window.useGPT = useGPT;
+        window.toggleExpand = toggleExpand;
+        window.showGPTSection = showGPTSection;
+        
         // Toggle sidebar
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -1727,6 +1753,18 @@
                 sendMessage();
             }, 500);
         }
+    </script>
+    
+    <!-- Inicialização inline como fallback -->
+    <script>
+        // Garantir que a inicialização aconteça
+        setTimeout(() => {
+            if (typeof initializeApp === 'function' && !window.appInitialized) {
+                console.log('Forcing initialization...');
+                window.appInitialized = true;
+                initializeApp();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
