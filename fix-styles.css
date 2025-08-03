@@ -1,0 +1,91 @@
+/* Correções emergenciais para o CSS */
+
+/* Sobrescrever variáveis RGB problemáticas com valores diretos */
+.status--success {
+  background-color: rgba(33, 128, 141, 0.1) !important;
+  border: 1px solid rgba(33, 128, 141, 0.3) !important;
+}
+
+.status--error {
+  background-color: rgba(192, 21, 47, 0.1) !important;
+  border: 1px solid rgba(192, 21, 47, 0.3) !important;
+}
+
+.status--warning {
+  background-color: rgba(168, 75, 47, 0.1) !important;
+  border: 1px solid rgba(168, 75, 47, 0.3) !important;
+}
+
+.status--info {
+  background-color: rgba(98, 108, 113, 0.1) !important;
+  border: 1px solid rgba(98, 108, 113, 0.3) !important;
+}
+
+/* Garantir que o layout não quebre */
+.container {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+.main {
+  overflow: hidden !important;
+}
+
+.sidebar {
+  flex-shrink: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+.chat-container {
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.chat-messages {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  flex: 1 !important;
+}
+
+.chat-input {
+  max-height: 120px !important;
+  overflow-y: auto !important;
+  resize: none !important;
+}
+
+/* Garantir que elementos não sobreponham */
+* {
+  position: relative !important;
+  z-index: auto !important;
+}
+
+.header {
+  z-index: 100 !important;
+}
+
+.modal {
+  z-index: 1000 !important;
+}
+
+.loading-overlay {
+  z-index: 999 !important;
+}
+
+.toast-container {
+  z-index: 2000 !important;
+}
+
+/* Prevenir overflow de texto */
+.chat-message,
+.welcome-message,
+.sidebar-section {
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Fix para fontes */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
