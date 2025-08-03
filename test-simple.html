@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Simples</title>
+</head>
+<body>
+    <h1>Teste do Console</h1>
+    <p>Abra o console (F12) e veja se aparecem os logs</p>
+    
+    <button onclick="alert('Onclick funciona!')">Teste onclick</button>
+    <button id="testBtn">Teste addEventListener</button>
+    
+    <script>
+        console.log('Script carregado');
+        
+        document.getElementById('testBtn').addEventListener('click', () => {
+            alert('addEventListener funciona!');
+        });
+        
+        // Testar se as funções do index.html existem
+        setTimeout(() => {
+            console.log('typeof toggleModelDropdown:', typeof toggleModelDropdown);
+            console.log('typeof window.toggleModelDropdown:', typeof window.toggleModelDropdown);
+        }, 2000);
+    </script>
+</body>
+</html>
