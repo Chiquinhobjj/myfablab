@@ -1,43 +1,41 @@
-# Use a imagem oficial do Nginx
+# Build stage para Node.js
+FROM node:18-alpine as builder
+
+WORKDIR /app
+
+# Copiar e instalar dependências do backend
+COPY backend/package*.json ./backend/
+RUN cd backend && npm ci --only=production
+
+# Stage final
 FROM nginx:alpine
 
-# Instalar ferramentas necessárias
-RUN apk add --no-cache gettext bash curl
+# Instalar Node.js no nginx para rodar o backend
+RUN apk add --no-cache nodejs npm curl
 
-# Copiar arquivos da aplicação
-COPY index.html /usr/share/nginx/html/
-COPY app.js /usr/share/nginx/html/
-COPY style.css /usr/share/nginx/html/
-COPY fix-styles.css /usr/share/nginx/html/
-COPY fix-app.js /usr/share/nginx/html/
-COPY health.html /usr/share/nginx/html/health
-
-# Copiar diretórios
-COPY config/ /usr/share/nginx/html/config/
-COPY components/ /usr/share/nginx/html/components/
-COPY styles/ /usr/share/nginx/html/styles/
-
-# Copiar configurações
-COPY nginx.conf /etc/nginx/nginx.conf.template
+# Copiar configuração do nginx
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY security-headers.conf /etc/nginx/security-headers.conf
-COPY entrypoint.sh /entrypoint.sh
 
-# Tornar entrypoint executável
-RUN chmod +x /entrypoint.sh
+# Copiar arquivos públicos para o nginx
+COPY public/ /usr/share/nginx/html/
 
-# Criar diretórios necessários e ajustar permissões
-RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
-    chmod -R 755 /usr/share/nginx/html && \
-    chmod -R 755 /var/cache/nginx && \
-    chmod -R 755 /var/log/nginx && \
-    chmod -R 755 /var/run
+# Copiar backend
+COPY --from=builder /app/backend/node_modules /app/backend/node_modules
+COPY backend/ /app/backend/
 
-# Expor porta 80
-EXPOSE 80
+# Script de inicialização
+RUN echo '#!/bin/sh' > /start.sh && \
+    echo 'cd /app/backend && node server.js &' >> /start.sh && \
+    echo 'nginx -g "daemon off;"' >> /start.sh && \
+    chmod +x /start.sh
+
+# Expor portas
+EXPOSE 80 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+    CMD curl -f http://localhost/api/health || exit 1
 
-# Usar entrypoint customizado
-ENTRYPOINT ["/entrypoint.sh"]
+# Iniciar ambos os serviços
+CMD ["/start.sh"]
