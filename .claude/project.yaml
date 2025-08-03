@@ -1,0 +1,108 @@
+# Claude Code Project Configuration
+# This file tells Claude Code how to use the Fazedoria Team agents
+
+## Project Information
+project_name: MyFabLab Chat AI
+project_type: Web Application
+production_url: https://myfablab.online
+repository: perplexity/myfablab.online
+
+## Agent Configuration
+agents:
+  orchestrator: @ceo-myfablab
+  
+  technical:
+    - @woz-myfablab         # Debug, architecture, technical solutions
+    - @emergency-fixer      # Crisis resolution, emergency fixes
+    - @equipe-myfablab     # DevOps, deployment, infrastructure
+  
+  product:
+    - @jobson-myfablab     # UX/UI design, simplification
+  
+  business:
+    - @gates-myfablab      # Business strategy, monetization
+    - @seth-myfablab       # Growth hacking, marketing
+
+## Auto-Delegation Rules
+delegation_rules:
+  - pattern: "bug|error|não funciona|quebrado|debug"
+    delegate_to: @woz-myfablab
+    
+  - pattern: "urgente|emergência|socorro|site down|crítico"
+    delegate_to: @emergency-fixer
+    
+  - pattern: "deploy|servidor|CI/CD|docker|infraestrutura"
+    delegate_to: @equipe-myfablab
+    
+  - pattern: "design|UX|interface|visual|simplicidade"
+    delegate_to: @jobson-myfablab
+    
+  - pattern: "monetização|negócio|estratégia|pricing|revenue"
+    delegate_to: @gates-myfablab
+    
+  - pattern: "growth|marketing|SEO|viral|usuários|crescimento"
+    delegate_to: @seth-myfablab
+    
+  - pattern: "decisão|conflito|priorização|estratégia geral"
+    delegate_to: @ceo-myfablab
+
+## Workflow Templates
+workflows:
+  fix_production_issue:
+    description: "When production is broken"
+    sequence:
+      1. @emergency-fixer   # Immediate fix
+      2. @woz-myfablab     # Root cause analysis
+      3. @equipe-myfablab  # Deploy solution
+      4. @ceo-myfablab     # Post-mortem decision
+  
+  new_feature:
+    description: "Implementing new features"
+    sequence:
+      1. @ceo-myfablab     # Approval and prioritization
+      2. @jobson-myfablab  # Design and UX
+      3. @woz-myfablab     # Technical implementation
+      4. @equipe-myfablab  # Deployment
+      5. @seth-myfablab    # Growth strategy
+  
+  monetization_strategy:
+    description: "Planning monetization"
+    sequence:
+      1. @gates-myfablab   # Business model
+      2. @seth-myfablab    # Growth loops
+      3. @jobson-myfablab  # Pricing page design
+      4. @ceo-myfablab     # Final decision
+
+## Context Awareness
+context:
+  current_status: "JavaScript modules not loading in production"
+  tech_stack: "Vanilla JS, HTML, CSS, OpenRouter API"
+  infrastructure: "VPS Hostinger 8GB RAM, EasyPanel, Docker"
+  business_model: "Currently free, planning freemium"
+  
+## Agent Instructions
+global_instructions: |
+  All agents should:
+  1. Focus on solving the immediate problem
+  2. Prioritize production stability
+  3. Keep solutions simple and maintainable
+  4. Document decisions and solutions
+  5. Collaborate with other agents when needed
+  
+## Emergency Protocols
+emergency:
+  triggers:
+    - "site is down"
+    - "production broken"
+    - "users can't access"
+    - "critical error"
+  
+  response:
+    primary: @emergency-fixer
+    backup: @woz-myfablab
+    escalation: @ceo-myfablab
+  
+  sla:
+    response_time: "2 minutes"
+    fix_time: "15 minutes"
+    communication: "immediate status update"

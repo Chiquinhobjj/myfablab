@@ -1,6 +1,4 @@
-# Configuração específica para Coolify
-# Este arquivo deve ser usado no Coolify em vez do docker-compose.yml padrão
-
+# Docker Compose para MyFabLab AI
 version: '3.8'
 
 services:
@@ -8,11 +6,10 @@ services:
     build: .
     container_name: myfablab-web
     restart: unless-stopped
-    expose:
-      - "80"
+    ports:
+      - "3001:80"
     environment:
-      - SERVER_NAME=${SERVER_NAME}
-      - CORS_ORIGIN=${CORS_ORIGIN}
+      - NODE_ENV=production
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
@@ -21,31 +18,9 @@ services:
       retries: 3
       start_period: 10s
     volumes:
-      - logs:/var/log/nginx
-    labels:
-      # Labels para Coolify
-      - "coolify.managed=true"
-      - "coolify.type=application"
-      - "coolify.pullRequest.enabled=true"
-      # Traefik labels para proxy reverso
-      - "traefik.enable=true"
-      - "traefik.http.routers.myfablab.rule=Host(`${DOMAIN}`)"
-      - "traefik.http.routers.myfablab.entrypoints=web,websecure"
-      - "traefik.http.routers.myfablab.tls.certresolver=letsencrypt"
-      - "traefik.http.services.myfablab.loadbalancer.server.port=80"
-      # Middlewares de segurança
-      - "traefik.http.middlewares.myfablab-headers.headers.stsSeconds=31536000"
-      - "traefik.http.middlewares.myfablab-headers.headers.stsIncludeSubdomains=true"
-      - "traefik.http.middlewares.myfablab-headers.headers.stsPreload=true"
-      - "traefik.http.middlewares.myfablab-compress.compress=true"
-      - "traefik.http.routers.myfablab.middlewares=myfablab-headers,myfablab-compress"
-    networks:
-      - coolify
+      - ./logs:/var/log/nginx
+      - ./backend/.env:/app/backend/.env:ro
 
 volumes:
   logs:
     driver: local
-
-networks:
-  coolify:
-    external: true

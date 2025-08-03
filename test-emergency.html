@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Teste MyFabLab Emergency</title>
+    <style>
+        body {
+            font-family: -apple-system, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5a67d8; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste da Versão Emergencial</h1>
+        
+        <div id="results"></div>
+        
+        <h2>Ações de Teste:</h2>
+        <button onclick="testAPI()">🔌 Testar API</button>
+        <button onclick="testLocalStorage()">💾 Testar LocalStorage</button>
+        <button onclick="testInterface()">🖱️ Testar Interface</button>
+        <button onclick="runAllTests()">🚀 Executar Todos</button>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function testAPI() {
+            clearResults();
+            addResult('🔌 Testando conexão com API...', 'info');
+            
+            const API_KEY = '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';
+            const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': 'https://myfablab.online',
+                        'X-Title': 'MyFabLab Test'
+                    },
+                    body: JSON.stringify({
+                        model: 'meta-llama/llama-3.2-3b-instruct:free',
+                        messages: [
+                            {role: 'system', content: 'Responda apenas "OK"'},
+                            {role: 'user', content: 'Teste'}
+                        ],
+                        max_tokens: 10
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ API conectada com sucesso!', 'success');
+                    addResult(`Resposta: ${data.choices[0].message.content}`, 'info');
+                } else {
+                    addResult(`❌ Erro na API: HTTP ${response.status}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+        
+        function testLocalStorage() {
+            clearResults();
+            addResult('💾 Testando LocalStorage...', 'info');
+            
+            try {
+                // Testar escrita
+                localStorage.setItem('test', 'MyFabLab');
+                
+                // Testar leitura
+                const value = localStorage.getItem('test');
+                
+                if (value === 'MyFabLab') {
+                    addResult('✅ LocalStorage funcionando!', 'success');
+                    
+                    // Verificar dados salvos
+                    const chatHistory = localStorage.getItem('chatHistory');
+                    const selectedModel = localStorage.getItem('selectedModel');
+                    
+                    if (chatHistory) {
+                        addResult(`📝 Histórico salvo: ${JSON.parse(chatHistory).length} mensagens`, 'info');
+                    }
+                    
+                    if (selectedModel) {
+                        addResult(`🤖 Modelo salvo: ${selectedModel}`, 'info');
+                    }
+                } else {
+                    addResult('❌ Erro ao ler LocalStorage', 'error');
+                }
+                
+                // Limpar teste
+                localStorage.removeItem('test');
+            } catch (error) {
+                addResult(`❌ LocalStorage não disponível: ${error.message}`, 'error');
+            }
+        }
+        
+        function testInterface() {
+            clearResults();
+            addResult('🖱️ Testando elementos da interface...', 'info');
+            
+            // Abrir index.html em nova aba
+            const testWindow = window.open('index.html', '_blank');
+            
+            setTimeout(() => {
+                if (testWindow) {
+                    addResult('✅ Interface aberta em nova aba', 'success');
+                    addResult('📝 Verifique manualmente:', 'info');
+                    addResult('1. O botão Enviar funciona?', 'info');
+                    addResult('2. O seletor de modelo funciona?', 'info');
+                    addResult('3. As mensagens aparecem corretamente?', 'info');
+                    addResult('4. O chat salva o histórico?', 'info');
+                } else {
+                    addResult('❌ Erro ao abrir interface', 'error');
+                }
+            }, 1000);
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            addResult('🚀 Executando todos os testes...', 'info');
+            
+            await testAPI();
+            
+            setTimeout(() => {
+                testLocalStorage();
+                
+                setTimeout(() => {
+                    testInterface();
+                    
+                    addResult('✅ Testes concluídos!', 'success');
+                }, 1000);
+            }, 1000);
+        }
+        
+        // Informações do sistema
+        window.onload = () => {
+            addResult('🎯 Sistema de Testes MyFabLab Emergency', 'info');
+            addResult(`📍 URL: ${window.location.href}`, 'info');
+            addResult(`🌐 Navegador: ${navigator.userAgent.split(' ').pop()}`, 'info');
+            addResult('👇 Clique nos botões para testar', 'info');
+        };
+    </script>
+</body>
+</html>

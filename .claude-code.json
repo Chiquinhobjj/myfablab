@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "MyFabLab Chat AI",
+    "type": "web-application",
+    "language": "javascript",
+    "framework": "vanilla"
+  },
+  "agents": {
+    "enabled": true,
+    "auto_load": true,
+    "directory": ".claude/agents",
+    "orchestrator": {
+      "name": "ceo-myfablab",
+      "path": ".claude/agents/fazedoria/ceo-orchestrator.md",
+      "auto_delegate": true
+    },
+    "team": [
+      {
+        "name": "woz-myfablab",
+        "path": ".claude/agents/fazedoria/woz-tech.md",
+        "triggers": ["debug", "error", "technical", "api", "javascript"],
+        "expertise": "technical"
+      },
+      {
+        "name": "emergency-fixer",
+        "path": ".claude/agents/debug/emergency-fixer.md",
+        "triggers": ["urgent", "emergency", "down", "broken", "critical"],
+        "expertise": "crisis"
+      },
+      {
+        "name": "jobson-myfablab",
+        "path": ".claude/agents/fazedoria/jobson-ux.md",
+        "triggers": ["design", "ux", "ui", "interface", "visual"],
+        "expertise": "design"
+      },
+      {
+        "name": "gates-myfablab",
+        "path": ".claude/agents/fazedoria/gates-business.md",
+        "triggers": ["business", "monetization", "revenue", "pricing"],
+        "expertise": "business"
+      },
+      {
+        "name": "seth-myfablab",
+        "path": ".claude/agents/fazedoria/seth-growth.md",
+        "triggers": ["growth", "marketing", "seo", "users", "viral"],
+        "expertise": "growth"
+      },
+      {
+        "name": "equipe-myfablab",
+        "path": ".claude/agents/fazedoria/equipe-devops.md",
+        "triggers": ["deploy", "docker", "server", "infrastructure"],
+        "expertise": "devops"
+      }
+    ]
+  },
+  "workflows": {
+    "auto_detect": true,
+    "patterns": [
+      {
+        "pattern": "site.*(down|broken|not working)",
+        "workflow": "emergency_response",
+        "agents": ["emergency-fixer", "woz-myfablab", "equipe-myfablab"]
+      },
+      {
+        "pattern": "(implement|build|create).*(feature|function)",
+        "workflow": "development",
+        "agents": ["ceo-myfablab", "jobson-myfablab", "woz-myfablab"]
+      },
+      {
+        "pattern": "(monetize|revenue|pricing|business)",
+        "workflow": "business_strategy",
+        "agents": ["gates-myfablab", "seth-myfablab", "ceo-myfablab"]
+      }
+    ]
+  },
+  "context": {
+    "current_issues": [
+      "JavaScript modules not loading",
+      "Need analytics implementation",
+      "Missing error handling"
+    ],
+    "stack": {
+      "frontend": ["HTML", "CSS", "JavaScript (Vanilla)"],
+      "api": "OpenRouter (59 free models)",
+      "hosting": "VPS Hostinger",
+      "management": "EasyPanel"
+    },
+    "urls": {
+      "production": "https://myfablab.online",
+      "emergency": "https://myfablab.online/emergency.html"
+    }
+  },
+  "shortcuts": {
+    "all": "@ceo-myfablab @woz-myfablab @jobson-myfablab @gates-myfablab @seth-myfablab @equipe-myfablab",
+    "tech": "@woz-myfablab @equipe-myfablab",
+    "product": "@jobson-myfablab @woz-myfablab",
+    "business": "@gates-myfablab @seth-myfablab",
+    "emergency": "@emergency-fixer @woz-myfablab"
+  }
+}

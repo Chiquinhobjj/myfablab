@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 MyFabLab Chat AI - Demo Offline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .status {
+            background: rgba(255,165,0,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 0.9em;
+        }
+        
+        .chat-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+        
+        .notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 10px;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            animation: fadeIn 0.3s ease-out;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .message.ai .message-content {
+            background: #f1f3f5;
+            color: #1a1a1a;
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+        
+        .message.user .message-avatar {
+            background: #667eea;
+        }
+        
+        .message.ai .message-avatar {
+            background: #f1f3f5;
+        }
+        
+        .input-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #messageInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        #messageInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        #sendButton {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        #sendButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MyFabLab Chat AI</h1>
+            <span class="status">🔧 Demo Offline - API em manutenção</span>
+        </div>
+        
+        <div class="chat-container">
+            <div class="notice">
+                <strong>⚠️ Modo Demo:</strong> As APIs estão temporariamente indisponíveis. Esta é uma demonstração com respostas simuladas para mostrar a interface funcionando.
+            </div>
+            
+            <div class="messages" id="messages">
+                <div class="message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        Olá! Estou em modo demo enquanto resolvemos um problema com as chaves da API. 
+                        Digite uma mensagem para ver a interface funcionando!
+                    </div>
+                </div>
+            </div>
+            
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input 
+                        type="text" 
+                        id="messageInput" 
+                        placeholder="Digite sua mensagem..."
+                        autocomplete="off"
+                        autofocus
+                    >
+                    <button id="sendButton">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        
+        // Respostas demo
+        const demoResponses = [
+            "Esta é uma resposta de demonstração. A interface está funcionando perfeitamente!",
+            "Quando as APIs estiverem ativas, você poderá conversar com diversos modelos de IA.",
+            "O MyFabLab Chat AI oferece acesso a 59 modelos gratuitos diferentes!",
+            "Você pode escolher entre modelos como Llama, Gemma, Mistral e muitos outros.",
+            "A interface suporta histórico de conversas, temas personalizados e muito mais!",
+            "Estamos trabalhando para resolver o problema das chaves da API o mais rápido possível."
+        ];
+        
+        let responseIndex = 0;
+        
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = isUser ? '👤' : '🤖';
+            
+            const messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = content;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(messageContent);
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Adicionar mensagem do usuário
+            addMessage(message, true);
+            messageInput.value = '';
+            
+            // Simular resposta após 1 segundo
+            setTimeout(() => {
+                const response = demoResponses[responseIndex % demoResponses.length];
+                addMessage(response);
+                responseIndex++;
+            }, 1000);
+        }
+        
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        console.log('🔧 MyFabLab Demo Mode - Interface funcionando sem API');
+    </script>
+</body>
+</html>

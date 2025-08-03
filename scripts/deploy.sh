@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script de deploy para Coolify
+# Script de deploy para EasyPanel
 
 set -e
 
@@ -72,11 +72,7 @@ deploy() {
     
     # Iniciar novos containers
     echo "🚀 Iniciando novos containers..."
-    if [ -f "coolify-docker-compose.yml" ] && [ "$DEPLOY_ENV" == "coolify" ]; then
-        docker-compose -f coolify-docker-compose.yml up -d
-    else
-        docker-compose up -d
-    fi
+    docker-compose up -d
     
     # Aguardar containers ficarem healthy
     echo "⏳ Aguardando containers ficarem saudáveis..."
@@ -100,7 +96,7 @@ health_check() {
     local attempt=1
     
     while [ $attempt -le $max_attempts ]; do
-        if curl -f -s http://localhost:8080/health > /dev/null; then
+        if curl -f -s http://localhost:3001/health > /dev/null; then
             echo -e "${GREEN}✅ Aplicação está saudável${NC}"
             return 0
         fi
