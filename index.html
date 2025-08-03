@@ -1421,7 +1421,12 @@
 
         // Populate model dropdown
         function populateModelDropdown() {
+            console.log('Populando dropdown...');
             const dropdown = document.getElementById('modelDropdown');
+            if (!dropdown) {
+                console.error('Dropdown não encontrado!');
+                return;
+            }
             dropdown.innerHTML = models.map(group => `
                 <div class="model-group">
                     <div class="model-group-title">${group.group}</div>
@@ -1440,6 +1445,7 @@
             
             // Adicionar eventos de clique após criar o HTML
             const options = dropdown.querySelectorAll('.model-option');
+            console.log(`Dropdown populado com ${options.length} opções`);
             options.forEach(option => {
                 option.addEventListener('click', function(e) {
                     e.stopPropagation();

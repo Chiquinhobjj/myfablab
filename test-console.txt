@@ -1,0 +1,29 @@
+TESTE NO CONSOLE DO NAVEGADOR:
+
+1. Abra http://localhost:3001
+2. Abra o console (F12)
+3. Cole e execute estes comandos um por vez:
+
+// Verificar se os elementos existem
+console.log('Botão:', document.getElementById('modelSelectorBtn'));
+console.log('Dropdown:', document.getElementById('modelDropdown'));
+
+// Forçar o dropdown a aparecer
+document.getElementById('modelDropdown').style.display = 'block';
+
+// Verificar se apareceu
+console.log('Display atual:', document.getElementById('modelDropdown').style.display);
+
+// Ver o conteúdo do dropdown
+console.log('Conteúdo:', document.getElementById('modelDropdown').innerHTML);
+
+// Testar clique manual
+document.getElementById('modelSelectorBtn').click();
+
+SE O DROPDOWN APARECER com o comando style.display = 'block', então:
+- O HTML e CSS estão OK
+- O problema é só o evento de clique
+
+SE NÃO APARECER:
+- Pode ser um problema de CSS (z-index, position, etc)
+- Ou o dropdown está vazio
