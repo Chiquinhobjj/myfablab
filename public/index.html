@@ -26,6 +26,12 @@
             box-sizing: border-box;
         }
 
+        /* Prevent horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: var(--background);
@@ -55,6 +61,25 @@
 
         .sidebar.open {
             width: var(--sidebar-width);
+        }
+
+        /* Sidebar Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
         }
 
         .sidebar-header {
@@ -802,14 +827,25 @@
                 height: 100%;
                 z-index: 1000;
                 box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+                width: var(--sidebar-width);
+                max-width: 80vw;
             }
 
             .sidebar.open {
                 left: 0;
             }
 
+            .chat-area {
+                padding: 20px 16px;
+            }
+
+            .main-content {
+                width: 100%;
+            }
+
             .welcome-container {
                 padding: 32px 24px;
+                max-width: 100%;
             }
 
             .greeting h1 {
@@ -822,15 +858,25 @@
 
             .input-wrapper {
                 padding: 16px 20px;
+                flex-direction: column;
+                gap: 12px;
             }
 
             .main-input {
                 font-size: 16px;
+                width: 100%;
+                padding-right: 16px;
+            }
+
+            .send-button {
+                width: 100%;
+                justify-content: center;
             }
 
             .actions-grid {
-                grid-template-columns: 1fr;
-                max-height: 180px;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                max-height: 300px;
             }
 
             .actions-grid.expanded {
@@ -844,15 +890,40 @@
             .tool-button span {
                 display: none;
             }
+
+            .quick-action {
+                padding: 16px 12px;
+            }
+
+            .action-icon {
+                font-size: 20px;
+            }
+
+            .action-text {
+                font-size: 13px;
+            }
         }
 
         @media (max-width: 480px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .logo-text {
+                font-size: 18px;
+            }
+
             .welcome-container {
-                padding: 24px 16px;
+                padding: 20px 16px;
             }
 
             .greeting h1 {
-                font-size: 24px;
+                font-size: 22px;
+                line-height: 1.3;
+            }
+
+            .greeting p {
+                font-size: 14px;
             }
 
             .input-icon {
@@ -860,9 +931,43 @@
                 margin-right: 12px;
             }
 
+            .main-input {
+                font-size: 16px;
+                padding: 14px 16px;
+            }
+
             .send-button {
-                padding: 8px 16px;
-                font-size: 14px;
+                padding: 12px 16px;
+                font-size: 15px;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 0 8px;
+            }
+
+            .quick-action {
+                padding: 14px 16px;
+                gap: 12px;
+            }
+
+            .toggle-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+
+            .gpts-section {
+                padding: 24px 16px;
+            }
+
+            .gpts-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .gpt-card {
+                padding: 16px;
             }
         }
 
@@ -887,6 +992,9 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Overlay for mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+        
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
@@ -1218,7 +1326,21 @@
 
         // Toggle sidebar
         function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('open');
+            
+            // Show/hide overlay on mobile
+            if (window.innerWidth <= 768) {
+                if (sidebar.classList.contains('open')) {
+                    overlay.style.display = 'block';
+                    setTimeout(() => overlay.classList.add('show'), 10);
+                } else {
+                    overlay.classList.remove('show');
+                    setTimeout(() => overlay.style.display = 'none', 300);
+                }
+            }
         }
 
         // Toggle model dropdown
