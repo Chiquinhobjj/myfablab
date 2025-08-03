@@ -1,6 +1,6 @@
 // Chat AI Application v2.0 - Com suporte a múltiplas APIs e todos os modelos
 import { apiKeyManager } from './config/api-keys.js';
-import { OPENROUTER_MODELS, getFreeModels } from './config/models-database.js';
+import { FREE_OPENROUTER_MODELS } from './config/free-models-database.js';
 import { createModelSelector } from './components/model-selector.js';
 
 class ChatAI {

@@ -8,7 +8,14 @@ RUN apk add --no-cache gettext bash curl
 COPY index.html /usr/share/nginx/html/
 COPY app.js /usr/share/nginx/html/
 COPY style.css /usr/share/nginx/html/
+COPY fix-styles.css /usr/share/nginx/html/
+COPY fix-app.js /usr/share/nginx/html/
 COPY health.html /usr/share/nginx/html/health
+
+# Copiar diretórios
+COPY config/ /usr/share/nginx/html/config/
+COPY components/ /usr/share/nginx/html/components/
+COPY styles/ /usr/share/nginx/html/styles/
 
 # Copiar configurações
 COPY nginx.conf /etc/nginx/nginx.conf.template
