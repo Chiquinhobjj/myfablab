@@ -5,10 +5,18 @@
 .env.*
 
 # API Keys - IMPORTANTE: Nunca commitar!
-config/api-keys.js
+# config/api-keys.js - Comentado pois precisa estar no repo para deploy
 
 # Backup do app duplicado
 app_1.js
+app-old.js
+app-optimized.js
+
+# Arquivos temporários de deploy
+myfablab-deploy.tar.gz
+myfablab-deploy.zip
+myfablab-deploy-temp/
+deploy-easypanel.sh
 
 # Dependencies
 node_modules/
