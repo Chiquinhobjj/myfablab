@@ -1790,19 +1790,46 @@
         window.showGPTSection = showGPTSection;
     </script>
     
-    <!-- Fix para o dropdown -->
-    <script src="fix-dropdown.js"></script>
-    
-    <!-- Inicialização inline como fallback -->
+    <!-- Fix direto e simples para o dropdown -->
     <script>
-        // Garantir que a inicialização aconteça
+        // Esperar um pouco para garantir que tudo carregou
         setTimeout(() => {
+            console.log('Aplicando fix final do dropdown...');
+            
+            const btn = document.getElementById('modelSelectorBtn');
+            const dropdown = document.getElementById('modelDropdown');
+            
+            if (btn && dropdown) {
+                // Limpar qualquer evento anterior
+                btn.onclick = null;
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                // Adicionar novo evento simples
+                document.getElementById('modelSelectorBtn').onclick = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const d = document.getElementById('modelDropdown');
+                    if (d.style.display === 'block') {
+                        d.style.display = 'none';
+                    } else {
+                        d.style.display = 'block';
+                    }
+                    return false;
+                };
+                
+                console.log('Dropdown fix aplicado com sucesso!');
+            } else {
+                console.error('Elementos do dropdown não encontrados!');
+            }
+            
+            // Garantir que a inicialização aconteça
             if (typeof initializeApp === 'function' && !window.appInitialized) {
                 console.log('Forcing initialization...');
                 window.appInitialized = true;
                 initializeApp();
             }
-        }, 1000);
+        }, 500);
     </script>
 </body>
 </html>
