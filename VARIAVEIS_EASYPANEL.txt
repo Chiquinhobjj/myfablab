@@ -1,0 +1,5 @@
+COPIE E COLE ESTAS VARIÁVEIS NO EASYPANEL:
+
+OPENROUTER_API_KEY=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
+
+Depois clique em "Salvar" e faça o "Implantar" novamente.

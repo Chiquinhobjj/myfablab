@@ -1,0 +1,55 @@
+# Dockerfile otimizado para EasyPanel
+FROM node:18-alpine
+
+# Instalar nginx
+RUN apk add --no-cache nginx curl
+
+# Criar diretórios necessários
+RUN mkdir -p /app/backend /app/public /run/nginx
+
+# Copiar backend
+WORKDIR /app/backend
+COPY backend/package*.json ./
+RUN npm ci --only=production
+COPY backend/ ./
+
+# Copiar arquivos estáticos
+COPY index.html /app/public/
+COPY index-*.html /app/public/
+COPY admin.html /app/public/
+COPY style.css /app/public/
+COPY app.js /app/public/
+COPY fix-app.js /app/public/
+COPY fix-styles.css /app/public/
+COPY sw.js /app/public/
+COPY config/ /app/public/config/
+COPY components/ /app/public/components/
+COPY styles/ /app/public/styles/
+
+# Configuração do nginx simplificada
+RUN echo 'server {' > /etc/nginx/http.d/default.conf && \
+    echo '    listen 80;' >> /etc/nginx/http.d/default.conf && \
+    echo '    location / {' >> /etc/nginx/http.d/default.conf && \
+    echo '        root /app/public;' >> /etc/nginx/http.d/default.conf && \
+    echo '        try_files $uri $uri/ /index.html;' >> /etc/nginx/http.d/default.conf && \
+    echo '    }' >> /etc/nginx/http.d/default.conf && \
+    echo '    location /api/ {' >> /etc/nginx/http.d/default.conf && \
+    echo '        proxy_pass http://127.0.0.1:3001;' >> /etc/nginx/http.d/default.conf && \
+    echo '        proxy_set_header Host $host;' >> /etc/nginx/http.d/default.conf && \
+    echo '    }' >> /etc/nginx/http.d/default.conf && \
+    echo '}' >> /etc/nginx/http.d/default.conf
+
+# Script de inicialização inline
+RUN echo '#!/bin/sh' > /start.sh && \
+    echo 'export PORT=3001' >> /start.sh && \
+    echo 'echo "PORT=3001" > /app/backend/.env' >> /start.sh && \
+    echo 'echo "NODE_ENV=production" >> /app/backend/.env' >> /start.sh && \
+    echo 'echo "OPENROUTER_API_KEY=${OPENROUTER_API_KEY}" >> /app/backend/.env' >> /start.sh && \
+    echo 'echo "ALLOWED_ORIGINS=*" >> /app/backend/.env' >> /start.sh && \
+    echo 'cd /app/backend && node server.js &' >> /start.sh && \
+    echo 'nginx -g "daemon off;"' >> /start.sh && \
+    chmod +x /start.sh
+
+EXPOSE 80 3001
+
+CMD ["/start.sh"]

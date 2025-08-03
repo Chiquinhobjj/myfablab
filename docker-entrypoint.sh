@@ -10,6 +10,9 @@ if [ -z "$OPENROUTER_API_KEY" ]; then
     export OPENROUTER_API_KEY="sk-or-v1-temp-key-replace-in-easypanel"
 fi
 
+# Forçar porta 3001 para o backend (EasyPanel pode estar sobrescrevendo)
+export PORT=3001
+
 # Criar .env file
 echo "Creating .env file..."
 cat > /app/backend/.env << EOF
@@ -41,17 +44,15 @@ for i in $(seq 1 30); do
     sleep 1
 done
 
-# Verificar se nginx já está rodando e parar se necessário
-if pgrep nginx > /dev/null; then
-    echo "Nginx already running, stopping it..."
-    nginx -s stop
-    sleep 2
+# Iniciar nginx apenas se não estiver rodando
+if ! pgrep nginx > /dev/null; then
+    echo "Starting nginx..."
+    nginx -g "daemon off;" &
+    NGINX_PID=$!
+else
+    echo "Nginx already running"
+    NGINX_PID=$(pgrep nginx | head -1)
 fi
-
-# Iniciar nginx
-echo "Starting nginx..."
-nginx -g "daemon off;" &
-NGINX_PID=$!
 
 # Função para tratar sinais
 trap "echo 'Shutting down...'; kill $BACKEND_PID $NGINX_PID; exit" SIGTERM SIGINT
