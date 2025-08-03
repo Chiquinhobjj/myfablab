@@ -1,61 +1,91 @@
-# MyFabLab.online 🚀
+# MyFabLab Chat AI 🚀
 
-Plataforma de chat AI avançada com integração de múltiplos modelos de inteligência artificial.
+Interface moderna para conversar com 59 modelos de IA gratuitos do OpenRouter!
 
 ## 🌟 Features
 
-- **Múltiplos Modelos de IA**: Integração com OpenAI, Anthropic, Google, Meta e mais via OpenRouter
-- **Interface Moderna**: Design baseado no Perplexity com dark/light mode
+- **59 Modelos Gratuitos**: Todos os modelos gratuitos do OpenRouter em um só lugar
+- **3 API Keys Integradas**: Rotação automática entre APIs para melhor performance
+- **Interface Moderna**: Design inspirado no OpenRouter com dark/light mode
+- **Categorias Inteligentes**: Ultra Context (1M+), Reasoning, Vision, Code, Uncensored
+- **Filtros Avançados**: Busca por nome, provider, capacidades e contexto
 - **Streaming de Respostas**: Respostas em tempo real com indicadores visuais
 - **Histórico de Conversas**: Salvamento automático no navegador
-- **Exportação**: Download de conversas em formato JSON
+- **Exportação**: Download de conversas em formato TXT
 - **Otimizado para Mobile**: Interface responsiva e touch-friendly
 
 ## 🚀 Deploy Rápido
 
-### Opção 1: Deploy com Coolify (Recomendado)
+### Deploy com EasyPanel (Recomendado)
+
+1. **Fork este repositório** no GitHub
+2. **No EasyPanel**: Create Service → GitHub
+3. **Configure**:
+   - Repository: Seu fork
+   - Branch: main
+   - Port: 80
+   - Build: Dockerfile
+4. **Deploy!** As 3 API keys já estão configuradas
+
+### Deploy Local com Docker
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/myfablab.online
-cd myfablab.online
+git clone https://github.com/seu-usuario/myfablab-chat-ai
+cd myfablab-chat-ai
 
-# Configure as variáveis de ambiente
-cp .env.example .env
-# Edite .env com sua API key da OpenRouter
-
-# Siga o guia de deployment
-cat DEPLOYMENT-GUIDE.md
-```
-
-### Opção 2: Deploy Local com Docker
-
-```bash
 # Build e execute
-docker-compose up -d
+docker build -t myfablab .
+docker run -p 8080:80 myfablab
 
-# Acesse em http://localhost
+# Acesse em http://localhost:8080
 ```
 
-## 🔧 Desenvolvimento
+## 🎯 Modelos Disponíveis
 
-### Pré-requisitos
+### 🌟 Ultra Context (1M+ tokens)
+- Google Gemini 2.0 Flash Experimental
+- Google Gemini 2.5 Pro Experimental  
+- OpenRouter Horizon Beta/Alpha
 
-- Node.js 18+ (para desenvolvimento do backend - em progresso)
-- Docker & Docker Compose
-- API Key da OpenRouter
+### 🧠 Reasoning & Thinking
+- DeepSeek Chat V3
+- Qwen QVQ 72B Preview
+- Meta Llama 3.3 70B
 
-### Estrutura do Projeto
+### 👁️ Vision & Multimodal
+- Google Gemini Flash
+- Pixtral Large
+- LLaVA 13B
+
+### 💻 Code & Development
+- DeepSeek Coder V2
+- Qwen 2.5 Coder
+- Code Llama
+
+### 🔓 Uncensored
+- Dolphin Mixtral
+- Nous Hermes
+- Midnight Miqu
+
+## 🔧 Estrutura do Projeto
 
 ```
-myfablab.online/
-├── index.html          # Interface principal
-├── app.js              # Lógica da aplicação
-├── style.css           # Estilos e design system
-├── Dockerfile          # Container para produção
-├── docker-compose.yml  # Orquestração local
-├── nginx.conf          # Configuração do servidor
-└── admin/              # Painel administrativo (em desenvolvimento)
+myfablab-chat-ai/
+├── index.html              # Interface principal
+├── app.js                  # Lógica da aplicação
+├── style.css               # Estilos principais
+├── fix-styles.css          # Correções de CSS
+├── fix-app.js              # Correções de JS
+├── config/
+│   ├── api-keys.js         # 3 API keys configuradas
+│   └── free-models-database.js  # Base de 59 modelos
+├── components/
+│   └── model-selector.js   # Componente seletor
+├── styles/
+│   └── model-selector.css  # Estilos do seletor
+├── Dockerfile              # Container para produção
+└── nginx.conf              # Configuração do servidor
 ```
 
 ## 🔐 Segurança
