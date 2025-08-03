@@ -35,27 +35,43 @@ BACKEND_PID=$!
 
 # Aguardar o backend iniciar
 echo "Waiting for backend to start..."
+BACKEND_READY=0
 for i in $(seq 1 30); do
     if curl -f http://localhost:3001/api/health > /dev/null 2>&1; then
-        echo "Backend is ready!"
+        echo "✅ Backend is ready!"
+        BACKEND_READY=1
         break
     fi
     echo "Waiting for backend... ($i/30)"
     sleep 1
 done
 
-# Iniciar nginx apenas se não estiver rodando
-if ! pgrep nginx > /dev/null; then
+if [ $BACKEND_READY -eq 0 ]; then
+    echo "⚠️  WARNING: Backend didn't start properly, but continuing..."
+fi
+
+# Verificar se nginx já está rodando (pode ter sido iniciado pelo EasyPanel)
+if pgrep nginx > /dev/null; then
+    echo "ℹ️  Nginx already running (started by EasyPanel)"
+    NGINX_PID=$(pgrep nginx | head -1)
+else
     echo "Starting nginx..."
     nginx -g "daemon off;" &
     NGINX_PID=$!
-else
-    echo "Nginx already running"
-    NGINX_PID=$(pgrep nginx | head -1)
+    echo "✅ Nginx started"
 fi
 
 # Função para tratar sinais
 trap "echo 'Shutting down...'; kill $BACKEND_PID $NGINX_PID; exit" SIGTERM SIGINT
+
+# Log final
+echo ""
+echo "========================================="
+echo "✅ MyFabLab AI está rodando!"
+echo "Backend: http://localhost:3001"
+echo "Frontend: http://localhost:80"
+echo "========================================="
+echo ""
 
 # Manter o container rodando
 wait $NGINX_PID
