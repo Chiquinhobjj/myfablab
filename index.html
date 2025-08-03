@@ -1197,7 +1197,7 @@
                     <!-- Seletor de Modelo -->
                     <div class="model-selector-container" style="margin-top: 20px;">
                         <div class="model-selector-label">Modelo de IA</div>
-                        <button class="model-selector" id="modelSelectorBtn" onclick="var d=document.getElementById('modelDropdown'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; return false;">
+                        <button class="model-selector" id="modelSelectorBtn">
                             <span id="selectedModel">Llama 3.2 3B</span>
                             <span style="font-size: 12px;">▼</span>
                         </button>
@@ -1319,8 +1319,44 @@
             setupEventListeners();
             updateGreeting();
             setupInputEffects();
+            setupDropdownFix(); // Nova função para corrigir dropdown
             setupClickHandlers();
             console.log('MyFabLab AI initialized successfully');
+        }
+        
+        // Corrigir dropdown com a lógica que funcionou
+        function setupDropdownFix() {
+            const btn = document.getElementById('modelSelectorBtn');
+            const dropdown = document.getElementById('modelDropdown');
+            
+            if (!btn || !dropdown) {
+                console.error('Dropdown elements not found');
+                return;
+            }
+            
+            // Remover qualquer onclick anterior
+            btn.onclick = null;
+            
+            // Adicionar evento de clique
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (dropdown.style.display === 'block') {
+                    dropdown.style.display = 'none';
+                } else {
+                    dropdown.style.display = 'block';
+                }
+            });
+            
+            // Fechar ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+            
+            console.log('Dropdown fix applied');
         }
         
         // Tentar inicializar de várias formas para garantir
@@ -1391,7 +1427,8 @@
                     <div class="model-group-title">${group.group}</div>
                     ${group.items.map(model => `
                         <div class="model-option ${model.id === selectedModelId ? 'selected' : ''}" 
-                             onclick="window.selectModel('${model.id}', '${model.name}')">
+                             data-model-id="${model.id}"
+                             data-model-name="${model.name}">
                             <div>
                                 <div class="model-name">${model.name}</div>
                                 <div class="model-description">${model.desc}</div>
@@ -1400,6 +1437,17 @@
                     `).join('')}
                 </div>
             `).join('');
+            
+            // Adicionar eventos de clique após criar o HTML
+            const options = dropdown.querySelectorAll('.model-option');
+            options.forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const modelId = this.dataset.modelId;
+                    const modelName = this.dataset.modelName;
+                    selectModel(modelId, modelName);
+                });
+            });
         }
 
         // Select model
