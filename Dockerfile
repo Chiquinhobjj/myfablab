@@ -21,7 +21,6 @@ COPY security-headers.conf /etc/nginx/security-headers.conf
 COPY index.html /usr/share/nginx/html/
 COPY fix-app.js /usr/share/nginx/html/
 COPY fix-styles.css /usr/share/nginx/html/
-COPY emergency.html /usr/share/nginx/html/
 COPY index-*.html /usr/share/nginx/html/
 COPY admin.html /usr/share/nginx/html/
 COPY style.css /usr/share/nginx/html/
@@ -35,11 +34,9 @@ COPY styles/ /usr/share/nginx/html/styles/
 COPY --from=builder /app/backend/node_modules /app/backend/node_modules
 COPY backend/ /app/backend/
 
-# Script de inicialização
-RUN echo '#!/bin/sh' > /start.sh && \
-    echo 'cd /app/backend && node server.js &' >> /start.sh && \
-    echo 'nginx -g "daemon off;"' >> /start.sh && \
-    chmod +x /start.sh
+# Copiar script de inicialização
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Expor portas
 EXPOSE 80 3001
@@ -48,5 +45,9 @@ EXPOSE 80 3001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost/api/health || exit 1
 
+# Variáveis de ambiente
+ENV NODE_ENV=production
+ENV PORT=3001
+
 # Iniciar ambos os serviços
-CMD ["/start.sh"]
+CMD ["/docker-entrypoint.sh"]
