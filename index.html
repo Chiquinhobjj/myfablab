@@ -776,10 +776,6 @@
             z-index: 9999;
         }
 
-        .model-dropdown.show {
-            display: block;
-        }
-
         .model-group {
             padding: 8px 0;
         }
@@ -1201,7 +1197,7 @@
                     <!-- Seletor de Modelo -->
                     <div class="model-selector-container" style="margin-top: 20px;">
                         <div class="model-selector-label">Modelo de IA</div>
-                        <button class="model-selector" id="modelSelectorBtn" onclick="document.getElementById('modelDropdown').classList.toggle('show')">
+                        <button class="model-selector" id="modelSelectorBtn" onclick="var d=document.getElementById('modelDropdown'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; return false;">
                             <span id="selectedModel">Llama 3.2 3B</span>
                             <span style="font-size: 12px;">▼</span>
                         </button>
@@ -1411,7 +1407,7 @@
             console.log('selectModel called:', modelId, modelName);
             selectedModelId = modelId;
             document.getElementById('selectedModel').textContent = modelName;
-            document.getElementById('modelDropdown').classList.remove('show');
+            document.getElementById('modelDropdown').style.display = 'none';
             populateModelDropdown();
             console.log('Model selected:', selectedModelId);
         }
@@ -1745,6 +1741,9 @@
         window.toggleExpand = toggleExpand;
         window.showGPTSection = showGPTSection;
     </script>
+    
+    <!-- Fix para o dropdown -->
+    <script src="fix-dropdown.js"></script>
     
     <!-- Inicialização inline como fallback -->
     <script>
