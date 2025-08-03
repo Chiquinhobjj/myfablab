@@ -1,102 +1,131 @@
-// Chat AI Application
+// Chat AI Application v2.0 - Com suporte a múltiplas APIs e todos os modelos
+import { apiKeyManager } from './config/api-keys.js';
+import { OPENROUTER_MODELS, getFreeModels } from './config/models-database.js';
+import { createModelSelector } from './components/model-selector.js';
+
 class ChatAI {
     constructor() {
-        this.apiKey = localStorage.getItem('openrouter_api_key') || '';
-        this.selectedModel = localStorage.getItem('selected_model') || '';
+        // Remove necessidade de API key do usuário - usa as 3 configuradas
+        this.apiKeyManager = apiKeyManager;
+        this.selectedModel = null;
         this.currentTheme = localStorage.getItem('theme') || 'light';
         this.conversationHistory = JSON.parse(localStorage.getItem('conversation_history') || '[]');
         this.settings = {
             temperature: parseFloat(localStorage.getItem('temperature') || '0.7'),
             maxTokens: parseInt(localStorage.getItem('max_tokens') || '2000'),
             systemPrompt: localStorage.getItem('system_prompt') || 'Você é um assistente AI útil e conhecedor.',
-            appName: localStorage.getItem('app_name') || 'Chat AI'
+            appName: 'MyFabLab Chat AI'
         };
         
-        this.models = [
-            {
-                id: "openai/gpt-4o",
-                name: "GPT-4o",
-                provider: "OpenAI",
-                description: "Modelo mais avançado da OpenAI",
-                category: "general"
-            },
-            {
-                id: "openai/gpt-4o-mini",
-                name: "GPT-4o Mini",
-                provider: "OpenAI",
-                description: "Versão otimizada e econômica",
-                category: "general"
-            },
-            {
-                id: "anthropic/claude-3.5-sonnet",
-                name: "Claude 3.5 Sonnet",
-                provider: "Anthropic",
-                description: "Excelente para análise e raciocínio",
-                category: "reasoning"
-            },
-            {
-                id: "anthropic/claude-4",
-                name: "Claude 4",
-                provider: "Anthropic",
-                description: "Último modelo da Anthropic",
-                category: "reasoning"
-            },
-            {
-                id: "google/gemini-2.0-flash",
-                name: "Gemini 2.0 Flash",
-                provider: "Google",
-                description: "Rápido e multimodal",
-                category: "multimodal"
-            },
-            {
-                id: "deepseek/deepseek-r1",
-                name: "DeepSeek R1",
-                provider: "DeepSeek",
-                description: "Especialista em raciocínio",
-                category: "reasoning"
-            },
-            {
-                id: "meta-llama/llama-3.3-70b-instruct",
-                name: "Llama 3.3 70B",
-                provider: "Meta",
-                description: "Modelo open-source poderoso",
-                category: "general"
-            },
-            {
-                id: "mistralai/mistral-large",
-                name: "Mistral Large",
-                provider: "Mistral",
-                description: "Modelo europeu avançado",
-                category: "general"
-            }
-        ];
-
-        this.quickPrompts = [
-            "Explique quantum computing de forma simples",
-            "Escreva um código Python para ordenar uma lista",
-            "Crie um resumo sobre inteligência artificial",
-            "Analise os prós e contras da energia solar",
-            "Traduza este texto para inglês",
-            "Como funciona o machine learning?",
-            "Explique blockchain em termos simples",
-            "Dicas de produtividade para trabalho remoto"
-        ];
-
         this.isGenerating = false;
-        this.currentController = null;
-
+        this.currentAbortController = null;
+        this.showModelSelector = true;
+        
+        this.quickPrompts = [
+            'Explique quantum computing de forma simples',
+            'Escreva um código Python para ordenar uma lista', 
+            'Crie uma campanha de marketing digital',
+            'Gere ideias de negócios inovadores',
+            'Traduza este texto para inglês',
+            'Resuma os principais pontos deste artigo'
+        ];
+        
         this.init();
     }
 
     init() {
         this.setupEventListeners();
-        this.populateModelSelect();
-        this.populateQuickPrompts();
-        this.loadConversation();
         this.applyTheme();
         this.updateSettings();
-        this.updateStatus();
-        this.autoResizeTextarea();
+        this.loadConversation();
+        
+        // Mostra seletor de modelos em vez de carregar lista antiga
+        this.showModelSelectorUI();
+    }
+
+    showModelSelectorUI() {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div id="modelSelectorContainer"></div>
+        `;
+        
+        // Cria o seletor de modelos
+        const container = document.getElementById('modelSelectorContainer');
+        this.modelSelector = createModelSelector(container, (model) => {
+            this.selectModel(model);
+        });
+    }
+
+    selectModel(model) {
+        this.selectedModel = model;
+        localStorage.setItem('selected_model', model.id);
+        
+        // Atualiza o select do sidebar se existir
+        const modelSelect = document.getElementById('modelSelect');
+        if (modelSelect) {
+            modelSelect.innerHTML = `<option value="${model.id}">${model.name}</option>`;
+            modelSelect.value = model.id;
+        }
+        
+        // Esconde o seletor e mostra o chat
+        this.showModelSelector = false;
+        this.startChat();
+    }
+
+    startChat() {
+        const chatMessages = document.getElementById('chatMessages');
+        chatMessages.innerHTML = `
+            <div class="welcome-message">
+                <div class="welcome-icon">${this.getModelIcon()}</div>
+                <h3>Bem-vindo ao ${this.selectedModel.name}!</h3>
+                <p>${this.selectedModel.description}</p>
+                <div class="model-info-summary">
+                    <span class="info-item">📏 Contexto: ${this.formatContextLength(this.selectedModel.contextLength)}</span>
+                    <span class="info-item">🏢 Provider: ${this.selectedModel.provider}</span>
+                    ${this.selectedModel.isFree ? '<span class="info-item free">✨ Gratuito</span>' : ''}
+                </div>
+            </div>
+        `;
+        
+        // Habilita o botão de enviar
+        const sendButton = document.getElementById('sendButton');
+        if (sendButton) sendButton.disabled = false;
+        
+        // Atualiza status
+        this.updateStatus('Pronto para conversar');
+        
+        // Carrega histórico se houver
+        if (this.conversationHistory.length > 0) {
+            this.conversationHistory.forEach(msg => {
+                this.displayMessage(msg.role, msg.content);
+            });
+        }
+    }
+
+    getModelIcon() {
+        const providerIcons = {
+            'Meta': '🦙',
+            'Google': '🔷',
+            'Anthropic': '🤖',
+            'OpenAI': '🧠',
+            'Microsoft': '💠',
+            'Mistral AI': '🌊',
+            'NousResearch': '🔬',
+            'Alibaba': '🌏',
+            'xAI': '🚀',
+            'Perplexity': '🔍',
+            'Cohere': '🌀'
+        };
+        return providerIcons[this.selectedModel.provider] || '🤖';
+    }
+
+    formatContextLength(length) {
+        if (length >= 1000000) {
+            return `${(length / 1000000).toFixed(1)}M tokens`;
+        } else if (length >= 1000) {
+            return `${(length / 1000).toFixed(0)}K tokens`;
+        }
+        return `${length} tokens`;
     }
 
     setupEventListeners() {
@@ -106,72 +135,120 @@ class ChatAI {
             themeToggle.addEventListener('click', () => this.toggleTheme());
         }
 
-        // Settings modal
+        // Settings modal - removido pois não precisa mais de API key
         const settingsBtn = document.getElementById('settingsBtn');
-        const closeSettings = document.getElementById('closeSettings');
-        const cancelSettings = document.getElementById('cancelSettings');
-        const saveSettings = document.getElementById('saveSettings');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => this.showSettings());
+        }
         
-        if (settingsBtn) settingsBtn.addEventListener('click', () => this.openSettings());
-        if (closeSettings) closeSettings.addEventListener('click', () => this.closeSettings());
-        if (cancelSettings) cancelSettings.addEventListener('click', () => this.closeSettings());
-        if (saveSettings) saveSettings.addEventListener('click', () => this.saveSettings());
-
-        // Model selection
+        // Model select - agora mostra o seletor completo
         const modelSelect = document.getElementById('modelSelect');
         if (modelSelect) {
-            modelSelect.addEventListener('change', (e) => this.selectModel(e.target.value));
+            modelSelect.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showModelSelectorUI();
+            });
         }
-
-        // Settings controls
-        const temperatureSlider = document.getElementById('temperature');
-        const maxTokensSlider = document.getElementById('maxTokens');
-        const systemPromptTextarea = document.getElementById('systemPrompt');
         
-        if (temperatureSlider) {
-            temperatureSlider.addEventListener('input', (e) => this.updateSlider('temperature', e.target.value));
+        // Temperature slider
+        const tempSlider = document.getElementById('temperature');
+        const tempValue = document.getElementById('tempValue');
+        if (tempSlider && tempValue) {
+            tempSlider.addEventListener('input', (e) => {
+                this.settings.temperature = parseFloat(e.target.value);
+                tempValue.textContent = e.target.value;
+                localStorage.setItem('temperature', e.target.value);
+            });
         }
-        if (maxTokensSlider) {
-            maxTokensSlider.addEventListener('input', (e) => this.updateSlider('maxTokens', e.target.value));
+        
+        // Max tokens slider
+        const tokensSlider = document.getElementById('maxTokens');
+        const tokensValue = document.getElementById('tokensValue');
+        if (tokensSlider && tokensValue) {
+            tokensSlider.addEventListener('input', (e) => {
+                this.settings.maxTokens = parseInt(e.target.value);
+                tokensValue.textContent = e.target.value;
+                localStorage.setItem('max_tokens', e.target.value);
+            });
         }
-        if (systemPromptTextarea) {
-            systemPromptTextarea.addEventListener('input', (e) => {
+        
+        // System prompt
+        const systemPrompt = document.getElementById('systemPrompt');
+        if (systemPrompt) {
+            systemPrompt.addEventListener('change', (e) => {
                 this.settings.systemPrompt = e.target.value;
                 localStorage.setItem('system_prompt', e.target.value);
             });
         }
-
-        // Chat controls
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
         
-        if (messageInput) {
-            messageInput.addEventListener('input', () => this.handleInputChange());
-            messageInput.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        // Clear chat
+        const clearChat = document.getElementById('clearChat');
+        if (clearChat) {
+            clearChat.addEventListener('click', () => this.clearConversation());
         }
+        
+        // Export chat
+        const exportChat = document.getElementById('exportChat');
+        if (exportChat) {
+            exportChat.addEventListener('click', () => this.exportConversation());
+        }
+        
+        // Send message
+        const sendButton = document.getElementById('sendButton');
+        const messageInput = document.getElementById('messageInput');
+        
         if (sendButton) {
             sendButton.addEventListener('click', () => this.sendMessage());
         }
-
-        // Action buttons
-        const clearChat = document.getElementById('clearChat');
-        const exportChat = document.getElementById('exportChat');
         
-        if (clearChat) clearChat.addEventListener('click', () => this.clearChat());
-        if (exportChat) exportChat.addEventListener('click', () => this.exportChat());
-
-        // Modal click outside to close
-        const settingsModal = document.getElementById('settingsModal');
-        if (settingsModal) {
-            settingsModal.addEventListener('click', (e) => {
-                if (e.target === e.currentTarget) this.closeSettings();
+        if (messageInput) {
+            messageInput.addEventListener('keydown', (e) => this.handleKeyPress(e));
+            messageInput.addEventListener('input', () => {
+                this.handleInputChange();
+                this.autoResizeTextarea();
             });
         }
+        
+        // Quick prompts
+        this.populateQuickPrompts();
+    }
 
-        // Auto-resize textarea
-        if (messageInput) {
-            messageInput.addEventListener('input', () => this.autoResizeTextarea());
-        }
+    showSettings() {
+        // Mostra apenas configurações relevantes (sem API key)
+        const modal = document.getElementById('settingsModal');
+        if (!modal) return;
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚙️ Configurações</h3>
+                    <button class="modal-close" onclick="document.getElementById('settingsModal').classList.add('hidden')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="api-status">
+                        <h4>Status das APIs</h4>
+                        ${this.apiKeyManager.getUsageStats().map(stat => `
+                            <div class="api-stat">
+                                <span class="api-name">${stat.name}</span>
+                                <span class="api-requests">${stat.requestCount} requisições</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <button class="btn btn--secondary" onclick="chatAI.resetAPIStats()">
+                        Resetar Contadores
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modal.classList.remove('hidden');
+    }
+
+    resetAPIStats() {
+        this.apiKeyManager.resetStats();
+        this.showSettings(); // Atualiza a view
+        this.showToast('Contadores resetados!', 'success');
     }
 
     toggleTheme() {
@@ -188,137 +265,70 @@ class ChatAI {
         }
     }
 
-    openSettings() {
-        const modal = document.getElementById('settingsModal');
-        const apiKeyInput = document.getElementById('apiKey');
-        const appNameInput = document.getElementById('appName');
-        
-        if (modal && apiKeyInput && appNameInput) {
-            apiKeyInput.value = this.apiKey;
-            appNameInput.value = this.settings.appName;
-            modal.classList.remove('hidden');
-            apiKeyInput.focus();
+    updateSettings() {
+        // Update UI elements with current settings
+        const tempSlider = document.getElementById('temperature');
+        const tempValue = document.getElementById('tempValue');
+        if (tempSlider && tempValue) {
+            tempSlider.value = this.settings.temperature;
+            tempValue.textContent = this.settings.temperature;
         }
-    }
-
-    closeSettings() {
-        const modal = document.getElementById('settingsModal');
-        if (modal) {
-            modal.classList.add('hidden');
+        
+        const tokensSlider = document.getElementById('maxTokens');
+        const tokensValue = document.getElementById('tokensValue');
+        if (tokensSlider && tokensValue) {
+            tokensSlider.value = this.settings.maxTokens;
+            tokensValue.textContent = this.settings.maxTokens;
         }
-    }
-
-    saveSettings() {
-        const apiKeyInput = document.getElementById('apiKey');
-        const appNameInput = document.getElementById('appName');
         
-        if (!apiKeyInput || !appNameInput) return;
-        
-        const apiKey = apiKeyInput.value.trim();
-        const appName = appNameInput.value.trim();
-
-        if (!apiKey) {
-            this.showToast('Por favor, insira uma API Key válida', 'error');
-            return;
+        const systemPrompt = document.getElementById('systemPrompt');
+        if (systemPrompt) {
+            systemPrompt.value = this.settings.systemPrompt;
         }
-
-        this.apiKey = apiKey;
-        this.settings.appName = appName || 'Chat AI';
-
-        localStorage.setItem('openrouter_api_key', this.apiKey);
-        localStorage.setItem('app_name', this.settings.appName);
-
-        this.closeSettings();
-        this.updateStatus();
-        this.showToast('Configurações salvas com sucesso!', 'success');
-    }
-
-    populateModelSelect() {
-        const select = document.getElementById('modelSelect');
-        if (!select) return;
-        
-        select.innerHTML = '<option value="">Selecione um modelo...</option>';
-        
-        this.models.forEach(model => {
-            const option = document.createElement('option');
-            option.value = model.id;
-            option.textContent = `${model.name} (${model.provider})`;
-            option.title = model.description;
-            select.appendChild(option);
-        });
-
-        if (this.selectedModel) {
-            select.value = this.selectedModel;
-        }
-    }
-
-    selectModel(modelId) {
-        this.selectedModel = modelId;
-        localStorage.setItem('selected_model', modelId);
-        this.updateStatus();
     }
 
     populateQuickPrompts() {
         const container = document.getElementById('quickPrompts');
         if (!container) return;
         
-        container.innerHTML = this.quickPrompts.map(prompt => 
-            `<button class="quick-prompt" data-prompt="${prompt}">${prompt}</button>`
-        ).join('');
-
+        container.innerHTML = this.quickPrompts.map(prompt => `
+            <button class="quick-prompt-btn" data-prompt="${prompt}">
+                ${prompt}
+            </button>
+        `).join('');
+        
         container.addEventListener('click', (e) => {
-            if (e.target.classList.contains('quick-prompt')) {
-                const messageInput = document.getElementById('messageInput');
-                if (messageInput) {
-                    messageInput.value = e.target.dataset.prompt;
+            if (e.target.classList.contains('quick-prompt-btn')) {
+                const prompt = e.target.dataset.prompt;
+                const input = document.getElementById('messageInput');
+                if (input) {
+                    input.value = prompt;
                     this.handleInputChange();
-                    messageInput.focus();
+                    this.autoResizeTextarea();
+                    input.focus();
                 }
             }
         });
-    }
-
-    updateSlider(setting, value) {
-        this.settings[setting] = setting === 'temperature' ? parseFloat(value) : parseInt(value);
-        const displayElement = document.getElementById(setting === 'temperature' ? 'tempValue' : 'tokensValue');
-        if (displayElement) {
-            displayElement.textContent = value;
-        }
-        localStorage.setItem(setting === 'temperature' ? 'temperature' : 'max_tokens', value);
-    }
-
-    updateSettings() {
-        const temperatureSlider = document.getElementById('temperature');
-        const maxTokensSlider = document.getElementById('maxTokens');
-        const systemPromptTextarea = document.getElementById('systemPrompt');
-        const tempValue = document.getElementById('tempValue');
-        const tokensValue = document.getElementById('tokensValue');
-        
-        if (temperatureSlider) temperatureSlider.value = this.settings.temperature;
-        if (maxTokensSlider) maxTokensSlider.value = this.settings.maxTokens;
-        if (systemPromptTextarea) systemPromptTextarea.value = this.settings.systemPrompt;
-        if (tempValue) tempValue.textContent = this.settings.temperature;
-        if (tokensValue) tokensValue.textContent = this.settings.maxTokens;
     }
 
     handleInputChange() {
         const input = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
         
-        if (!input || !sendButton) return;
-        
-        const hasContent = input.value.trim().length > 0;
-        const canSend = hasContent && this.apiKey && this.selectedModel && !this.isGenerating;
-        
-        sendButton.disabled = !canSend;
-        this.updateTokenCount(input.value);
+        if (input && sendButton) {
+            const hasText = input.value.trim().length > 0;
+            const canSend = hasText && this.selectedModel && !this.isGenerating;
+            sendButton.disabled = !canSend;
+            
+            // Update token count
+            this.updateTokenCount(input.value);
+        }
     }
 
-    handleKeyDown(e) {
+    handleKeyPress(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            const sendButton = document.getElementById('sendButton');
-            if (sendButton && !sendButton.disabled) {
+            if (!this.isGenerating && this.selectedModel) {
                 this.sendMessage();
             }
         }
@@ -341,47 +351,41 @@ class ChatAI {
         }
     }
 
-    updateStatus() {
-        const statusText = document.getElementById('statusText');
-        if (!statusText) return;
+    clearConversation() {
+        if (!confirm('Tem certeza que deseja limpar toda a conversa?')) return;
         
-        if (!this.apiKey) {
-            statusText.textContent = 'Configure sua API key para começar';
-        } else if (!this.selectedModel) {
-            statusText.textContent = 'Selecione um modelo de IA';
-        } else if (this.isGenerating) {
-            statusText.textContent = 'Gerando resposta...';
-        } else {
-            const model = this.models.find(m => m.id === this.selectedModel);
-            statusText.textContent = `Pronto - ${model ? model.name : 'Modelo selecionado'}`;
+        this.conversationHistory = [];
+        localStorage.setItem('conversation_history', '[]');
+        
+        if (!this.showModelSelector) {
+            this.startChat();
         }
+        
+        this.showToast('Conversa limpa!', 'success');
     }
 
-    loadConversation() {
-        const messagesContainer = document.getElementById('chatMessages');
-        if (!messagesContainer) return;
+    exportConversation() {
+        const date = new Date().toISOString().split('T')[0];
+        const content = this.conversationHistory.map(msg => 
+            `${msg.role.toUpperCase()}: ${msg.content}`
+        ).join('\n\n---\n\n');
         
-        if (this.conversationHistory.length === 0) {
-            return;
-        }
-
-        // Clear welcome message
-        messagesContainer.innerHTML = '';
-
-        this.conversationHistory.forEach(message => {
-            this.displayMessage(message.role, message.content, false);
-        });
-
-        this.scrollToBottom();
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat-export-${date}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showToast('Conversa exportada!', 'success');
     }
 
     async sendMessage() {
         const input = document.getElementById('messageInput');
-        if (!input) return;
-        
         const userMessage = input.value.trim();
         
-        if (!userMessage || !this.apiKey || !this.selectedModel || this.isGenerating) return;
+        if (!userMessage || !this.selectedModel || this.isGenerating) return;
 
         // Clear input and disable sending
         input.value = '';
@@ -402,298 +406,249 @@ class ChatAI {
             await this.streamCompletion(userMessage);
         } catch (error) {
             console.error('Error:', error);
-            this.hideTypingIndicator();
-            this.displayMessage('assistant', `❌ Erro: ${error.message}`);
-            this.showToast(`Erro ao gerar resposta: ${error.message}`, 'error');
-        } finally {
-            this.isGenerating = false;
-            this.updateStatus();
-            this.handleInputChange();
+            this.handleError(error);
         }
     }
 
     async streamCompletion(userMessage) {
-        const messages = [
-            { role: 'system', content: this.settings.systemPrompt },
-            ...this.conversationHistory
-        ];
-
-        this.currentController = new AbortController();
-
+        this.currentAbortController = new AbortController();
+        
+        // Usa a próxima API key disponível
+        const apiKey = this.apiKeyManager.getNextKey();
+        
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${this.apiKey}`,
-                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': window.location.origin,
-                'X-Title': this.settings.appName
+                'X-Title': this.settings.appName,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: this.selectedModel,
-                messages: messages,
-                max_tokens: this.settings.maxTokens,
+                model: this.selectedModel.id,
+                messages: [
+                    { role: 'system', content: this.settings.systemPrompt },
+                    ...this.conversationHistory.slice(-10) // Last 10 messages for context
+                ],
                 temperature: this.settings.temperature,
+                max_tokens: this.settings.maxTokens,
                 stream: true
             }),
-            signal: this.currentController.signal
+            signal: this.currentAbortController.signal
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`);
+            throw new Error(`API Error: ${response.status} ${response.statusText}`);
         }
 
+        // Hide typing indicator
         this.hideTypingIndicator();
-        const messageElement = this.displayMessage('assistant', '', true);
-        const contentElement = messageElement.querySelector('.message-text');
 
+        // Create message element for streaming
+        const messageId = Date.now();
+        this.displayMessage('assistant', '', messageId);
+        
         let fullResponse = '';
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
 
-        try {
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
-
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const data = line.slice(6);
-                        if (data === '[DONE]') continue;
-
-                        try {
-                            const parsed = JSON.parse(data);
-                            const content = parsed.choices?.[0]?.delta?.content;
-                            
-                            if (content) {
-                                fullResponse += content;
-                                if (contentElement) {
-                                    contentElement.innerHTML = this.formatMessage(fullResponse);
-                                    this.scrollToBottom();
-                                }
-                            }
-                        } catch (e) {
-                            // Ignore parse errors for partial chunks
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+            
+            for (const line of lines) {
+                if (line.startsWith('data: ') && line !== 'data: [DONE]') {
+                    try {
+                        const data = JSON.parse(line.slice(6));
+                        const content = data.choices[0]?.delta?.content || '';
+                        if (content) {
+                            fullResponse += content;
+                            this.updateStreamingMessage(messageId, fullResponse);
                         }
+                    } catch (e) {
+                        console.error('Error parsing SSE:', e);
                     }
                 }
             }
-        } finally {
-            reader.releaseLock();
         }
 
-        if (fullResponse) {
-            this.addToConversation('assistant', fullResponse);
-            this.addMessageActions(messageElement, fullResponse);
-        }
+        // Add to conversation history
+        this.addToConversation('assistant', fullResponse);
+        this.isGenerating = false;
+        this.updateStatus();
+        this.saveConversation();
     }
 
-    showTypingIndicator() {
-        const messagesContainer = document.getElementById('chatMessages');
-        if (!messagesContainer) return;
+    displayMessage(role, content, messageId = null) {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+
+        // Remove welcome message if it exists
+        const welcomeMessage = chatMessages.querySelector('.welcome-message');
+        if (welcomeMessage) {
+            welcomeMessage.remove();
+        }
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${role}`;
+        if (messageId) messageDiv.dataset.messageId = messageId;
         
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'typing-indicator';
-        typingIndicator.id = 'typingIndicator';
-        
-        typingIndicator.innerHTML = `
-            <div class="message-avatar">🤖</div>
-            <div class="typing-content">
-                <div class="typing-dots">
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
-                    <div class="typing-dot"></div>
+        messageDiv.innerHTML = `
+            <div class="message-avatar">${role === 'user' ? '👤' : this.getModelIcon()}</div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-role">${role === 'user' ? 'Você' : this.selectedModel.name}</span>
+                    <span class="message-time">${new Date().toLocaleTimeString()}</span>
                 </div>
-                <span>Digitando...</span>
+                <div class="message-text">${this.formatMessage(content)}</div>
             </div>
         `;
         
-        messagesContainer.appendChild(typingIndicator);
-        this.scrollToBottom();
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    updateStreamingMessage(messageId, content) {
+        const messageElement = document.querySelector(`[data-message-id="${messageId}"] .message-text`);
+        if (messageElement) {
+            messageElement.innerHTML = this.formatMessage(content);
+            
+            // Auto-scroll to bottom
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+    }
+
+    formatMessage(content) {
+        // Basic markdown formatting
+        return content
+            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+    }
+
+    showTypingIndicator() {
+        const chatMessages = document.getElementById('chatMessages');
+        if (!chatMessages) return;
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'typing-indicator';
+        indicator.innerHTML = `
+            <div class="message-avatar">${this.getModelIcon()}</div>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+        
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     hideTypingIndicator() {
-        const indicator = document.getElementById('typingIndicator');
+        const indicator = document.querySelector('.typing-indicator');
         if (indicator) {
             indicator.remove();
         }
     }
 
-    displayMessage(role, content, isStreaming = false) {
-        const messagesContainer = document.getElementById('chatMessages');
-        if (!messagesContainer) return null;
-        
-        // Remove welcome message if it exists
-        const welcomeMessage = messagesContainer.querySelector('.welcome-message');
-        if (welcomeMessage) {
-            welcomeMessage.remove();
-        }
-
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${role} fade-in`;
-        
-        const avatar = role === 'user' ? '👤' : '🤖';
-        
-        messageElement.innerHTML = `
-            <div class="message-avatar">${avatar}</div>
-            <div class="message-content">
-                <p class="message-text">${this.formatMessage(content)}</p>
-            </div>
-        `;
-
-        messagesContainer.appendChild(messageElement);
-        
-        if (!isStreaming) {
-            this.addMessageActions(messageElement, content);
-        }
-        
-        this.scrollToBottom();
-        return messageElement;
-    }
-
-    addMessageActions(messageElement, content) {
-        if (!messageElement) return;
-        
-        const messageContent = messageElement.querySelector('.message-content');
-        if (!messageContent) return;
-        
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'message-actions';
-        
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'message-action';
-        copyBtn.innerHTML = '📋 Copiar';
-        copyBtn.addEventListener('click', () => this.copyMessage(content));
-        
-        actionsDiv.appendChild(copyBtn);
-        messageContent.appendChild(actionsDiv);
-    }
-
-    formatMessage(content) {
-        if (!content) return '';
-        
-        // Basic markdown-like formatting
-        return content
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-            .replace(/\n/g, '<br>');
-    }
-
-    copyMessage(content) {
-        const textContent = content.replace(/<[^>]*>/g, '');
-        navigator.clipboard.writeText(textContent).then(() => {
-            this.showToast('Mensagem copiada!', 'success');
-        }).catch(() => {
-            this.showToast('Erro ao copiar mensagem', 'error');
-        });
-    }
-
     addToConversation(role, content) {
         this.conversationHistory.push({ role, content });
+        // Keep conversation history reasonable size
+        if (this.conversationHistory.length > 50) {
+            this.conversationHistory = this.conversationHistory.slice(-50);
+        }
+    }
+
+    saveConversation() {
         localStorage.setItem('conversation_history', JSON.stringify(this.conversationHistory));
     }
 
-    scrollToBottom() {
-        const messagesContainer = document.getElementById('chatMessages');
-        if (messagesContainer) {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    loadConversation() {
+        // Conversation is loaded in constructor
+        // This method can be used to refresh from storage
+    }
+
+    updateStatus(customStatus = null) {
+        const statusText = document.getElementById('statusText');
+        if (!statusText) return;
+        
+        if (customStatus) {
+            statusText.textContent = customStatus;
+        } else if (this.isGenerating) {
+            statusText.textContent = 'Gerando resposta...';
+        } else if (!this.selectedModel) {
+            statusText.textContent = 'Selecione um modelo';
+        } else {
+            statusText.textContent = 'Pronto para conversar';
         }
     }
 
-    clearChat() {
-        if (confirm('Tem certeza que deseja limpar toda a conversa?')) {
-            this.conversationHistory = [];
-            localStorage.removeItem('conversation_history');
-            
-            const messagesContainer = document.getElementById('chatMessages');
-            if (messagesContainer) {
-                messagesContainer.innerHTML = `
-                    <div class="welcome-message">
-                        <div class="welcome-icon">👋</div>
-                        <h3>Conversa limpa!</h3>
-                        <p>Comece uma nova conversa digitando uma mensagem.</p>
-                    </div>
-                `;
-            }
-            
-            this.showToast('Conversa limpa com sucesso!', 'success');
+    handleError(error) {
+        console.error('Chat error:', error);
+        this.hideTypingIndicator();
+        this.isGenerating = false;
+        this.updateStatus();
+        
+        let errorMessage = 'Ocorreu um erro ao processar sua mensagem.';
+        
+        if (error.message.includes('API Error')) {
+            errorMessage = 'Erro na API. Tentando com próxima chave...';
+            // Tenta novamente com a próxima API key
+            setTimeout(() => {
+                const lastMessage = this.conversationHistory[this.conversationHistory.length - 1];
+                if (lastMessage && lastMessage.role === 'user') {
+                    this.conversationHistory.pop(); // Remove a última mensagem para reenviar
+                    this.sendMessage();
+                }
+            }, 1000);
         }
-    }
-
-    exportChat() {
-        if (this.conversationHistory.length === 0) {
-            this.showToast('Nenhuma conversa para exportar', 'info');
-            return;
-        }
-
-        const chatData = {
-            timestamp: new Date().toISOString(),
-            model: this.selectedModel,
-            modelName: this.models.find(m => m.id === this.selectedModel)?.name || 'Desconhecido',
-            settings: this.settings,
-            conversation: this.conversationHistory
-        };
-
-        const dataStr = JSON.stringify(chatData, null, 2);
-        const dataBlob = new Blob([dataStr], { type: 'application/json' });
         
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(dataBlob);
-        link.download = `chat-export-${new Date().toISOString().split('T')[0]}.json`;
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        this.showToast('Chat exportado com sucesso!', 'success');
+        this.showToast(errorMessage, 'error');
     }
 
     showToast(message, type = 'info') {
-        const container = document.getElementById('toastContainer');
-        if (!container) return;
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
         
         const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
+        toast.className = `toast toast--${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <span class="toast-icon">${this.getToastIcon(type)}</span>
+                <span class="toast-message">${message}</span>
+            </div>
+        `;
         
+        toastContainer.appendChild(toast);
+        
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    getToastIcon(type) {
         const icons = {
             success: '✅',
             error: '❌',
             info: 'ℹ️',
             warning: '⚠️'
         };
-        
-        toast.innerHTML = `
-            <span class="toast-icon">${icons[type] || icons.info}</span>
-            <span class="toast-message">${message}</span>
-            <button class="toast-close">&times;</button>
-        `;
-        
-        container.appendChild(toast);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.remove();
-            }
-        }, 5000);
-        
-        // Manual close
-        const closeBtn = toast.querySelector('.toast-close');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                toast.remove();
-            });
-        }
+        return icons[type] || icons.info;
     }
 }
 
-// Initialize the application
-let chatAI;
+// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    chatAI = new ChatAI();
+    window.chatAI = new ChatAI();
 });

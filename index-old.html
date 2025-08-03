@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyFabLab Chat AI - Converse com Múltiplos Modelos de IA</title>
+    <title>Chat AI - OpenRouter</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="styles/model-selector.css">
     <link rel="stylesheet" href="fix-styles.css">
 </head>
 <body>
@@ -13,13 +12,13 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <h1 class="header-title">🚀 MyFabLab Chat AI</h1>
+                <h1 class="header-title">🤖 Chat AI</h1>
                 <div class="header-actions">
                     <button class="btn btn--outline btn--sm" id="themeToggle">
                         <span id="themeIcon">🌙</span>
                     </button>
                     <button class="btn btn--secondary btn--sm" id="settingsBtn">
-                        ⚙️ Status APIs
+                        ⚙️ Configurações
                     </button>
                 </div>
             </div>
@@ -34,9 +33,9 @@
                 <!-- Model Selection -->
                 <div class="sidebar-section">
                     <h3>Modelo de IA</h3>
-                    <button class="form-control model-select-btn" id="modelSelect">
-                        🔍 Selecionar Modelo...
-                    </button>
+                    <select class="form-control" id="modelSelect">
+                        <option value="">Selecione um modelo...</option>
+                    </select>
                 </div>
 
                 <!-- Settings -->
@@ -79,19 +78,23 @@
             <div class="chat-container">
                 <!-- Chat Messages -->
                 <div class="chat-messages" id="chatMessages">
-                    <!-- Model selector will be shown here initially -->
+                    <div class="welcome-message">
+                        <div class="welcome-icon">👋</div>
+                        <h3>Bem-vindo ao Chat AI!</h3>
+                        <p>Selecione um modelo de IA e comece a conversar. Configure sua API key nas configurações para começar.</p>
+                    </div>
                 </div>
 
                 <!-- Chat Input -->
                 <div class="chat-input-container">
                     <div class="chat-input-wrapper">
-                        <textarea class="chat-input" id="messageInput" placeholder="Selecione um modelo para começar..." rows="1" disabled></textarea>
+                        <textarea class="chat-input" id="messageInput" placeholder="Digite sua mensagem aqui..." rows="1"></textarea>
                         <button class="send-button" id="sendButton" disabled>
                             <span class="send-icon">📤</span>
                         </button>
                     </div>
                     <div class="chat-info">
-                        <span id="statusText">Selecione um modelo</span>
+                        <span id="statusText">Pronto para conversar</span>
                         <span id="tokenCount">0 tokens</span>
                     </div>
                 </div>
@@ -101,7 +104,31 @@
 
     <!-- Settings Modal -->
     <div class="modal hidden" id="settingsModal">
-        <!-- Content will be dynamically generated -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>⚙️ Configurações da API</h3>
+                <button class="modal-close" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="apiKey">API Key do OpenRouter:</label>
+                    <input type="password" class="form-control" id="apiKey" placeholder="sk-or-...">
+                    <small class="help-text">
+                        Sua chave API será armazenada apenas localmente no seu navegador.
+                        <a href="https://openrouter.ai/keys" target="_blank">Obter API Key</a>
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="appName">Nome da Aplicação:</label>
+                    <input type="text" class="form-control" id="appName" value="Chat AI" placeholder="Nome da sua aplicação">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" id="cancelSettings">Cancelar</button>
+                <button class="btn btn--primary" id="saveSettings">Salvar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Loading Overlay -->
@@ -115,108 +142,7 @@
     <!-- Toast Notifications -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Styles for new elements -->
-    <style>
-        .model-select-btn {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--color-border);
-            border-radius: var(--radius-md);
-            background: var(--color-surface);
-            color: var(--color-text);
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-
-        .model-select-btn:hover {
-            border-color: var(--color-primary);
-            background: var(--color-secondary);
-        }
-
-        .model-info-summary {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .info-item {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 8px;
-            background: var(--color-secondary);
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            color: var(--color-text);
-        }
-
-        .info-item.free {
-            background: rgba(var(--color-success-rgb), 0.1);
-            color: var(--color-success);
-        }
-
-        .api-status {
-            margin-bottom: 16px;
-        }
-
-        .api-status h4 {
-            margin: 0 0 12px 0;
-            font-size: 16px;
-            color: var(--color-text);
-        }
-
-        .api-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: var(--color-secondary);
-            border-radius: var(--radius-sm);
-            margin-bottom: 8px;
-        }
-
-        .api-name {
-            font-weight: 500;
-            color: var(--color-text);
-        }
-
-        .api-requests {
-            color: var(--color-text-secondary);
-            font-size: 14px;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: -100%;
-                top: 80px;
-                bottom: 0;
-                width: 280px;
-                background: var(--color-surface);
-                z-index: 50;
-                transition: left 0.3s ease;
-                overflow-y: auto;
-                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-            }
-
-            .sidebar.open {
-                left: 0;
-            }
-
-            .container {
-                padding: 0;
-            }
-
-            .chat-container {
-                width: 100%;
-            }
-        }
-    </style>
-
-    <!-- Scripts com módulos ES6 -->
-    <script type="module" src="app-v2.js"></script>
+    <script src="app.js"></script>
     <script src="fix-app.js"></script>
 </body>
 </html>
