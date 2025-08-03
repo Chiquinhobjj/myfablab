@@ -1,0 +1,27 @@
+{
+  "name": "myfablab-ai",
+  "version": "2.0.0",
+  "description": "MyFabLab AI Chat - Sistema seguro com múltiplas interfaces",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "dev": "cd backend && nodemon server.js",
+    "deploy": "./deploy.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chiquinhobjj/myfablab.git"
+  },
+  "keywords": [
+    "ai",
+    "chat",
+    "openrouter",
+    "myfablab"
+  ],
+  "author": "MyFabLab Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Chiquinhobjj/myfablab/issues"
+  },
+  "homepage": "https://myfablab.online"
+}

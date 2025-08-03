@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFabLab AI - Welcome Box Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* Container Principal */
+        .welcome-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 800px;
+            padding: 48px 40px;
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Saudação */
+        .greeting {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .greeting h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .greeting .time-greeting {
+            color: #20808d;
+            font-weight: 500;
+        }
+        
+        .greeting p {
+            font-size: 18px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+        
+        /* Campo de Input */
+        .input-section {
+            margin-bottom: 48px;
+            position: relative;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px 24px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-wrapper:hover {
+            border-color: #d1d5db;
+            background: #f3f4f6;
+        }
+        
+        .input-wrapper:focus-within {
+            border-color: #20808d;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(32, 128, 141, 0.1);
+        }
+        
+        .input-icon {
+            font-size: 24px;
+            margin-right: 16px;
+            opacity: 0.7;
+        }
+        
+        .main-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            color: #1a1a1a;
+            outline: none;
+            font-weight: 400;
+        }
+        
+        .main-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        .send-button {
+            background: #20808d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .send-button:hover {
+            background: #1a6b76;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(32, 128, 141, 0.2);
+        }
+        
+        .send-button:active {
+            transform: translateY(0);
+        }
+        
+        /* Ações Rápidas */
+        .quick-actions {
+            margin-bottom: 24px;
+        }
+        
+        .actions-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .actions-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .expand-button {
+            background: none;
+            border: none;
+            color: #20808d;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .expand-button:hover {
+            background: rgba(32, 128, 141, 0.1);
+        }
+        
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .expand-button.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* Grid de Ações */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            overflow: hidden;
+            max-height: 200px;
+            transition: max-height 0.4s ease;
+        }
+        
+        .actions-grid.expanded {
+            max-height: 600px;
+        }
+        
+        .action-card {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-card:hover {
+            background: white;
+            border-color: #20808d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .action-card:active {
+            transform: translateY(0);
+        }
+        
+        .action-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .action-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .action-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .action-description {
+            font-size: 13px;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .action-card {
+            animation: slideIn 0.4s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .action-card:nth-child(1) { animation-delay: 0.05s; }
+        .action-card:nth-child(2) { animation-delay: 0.1s; }
+        .action-card:nth-child(3) { animation-delay: 0.15s; }
+        .action-card:nth-child(4) { animation-delay: 0.2s; }
+        .action-card:nth-child(5) { animation-delay: 0.25s; }
+        .action-card:nth-child(6) { animation-delay: 0.3s; }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .welcome-container {
+                padding: 32px 24px;
+            }
+            
+            .greeting h1 {
+                font-size: 28px;
+            }
+            
+            .greeting p {
+                font-size: 16px;
+            }
+            
+            .input-wrapper {
+                padding: 16px 20px;
+            }
+            
+            .main-input {
+                font-size: 16px;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+                max-height: 180px;
+            }
+            
+            .actions-grid.expanded {
+                max-height: 800px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .welcome-container {
+                padding: 24px 16px;
+            }
+            
+            .greeting h1 {
+                font-size: 24px;
+            }
+            
+            .input-icon {
+                font-size: 20px;
+                margin-right: 12px;
+            }
+            
+            .send-button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <!-- Saudação -->
+        <div class="greeting">
+            <h1><span class="time-greeting">Bom dia</span>, João!</h1>
+            <p>Como posso ajudar você hoje?</p>
+        </div>
+        
+        <!-- Campo de Input -->
+        <div class="input-section">
+            <div class="input-wrapper">
+                <span class="input-icon">💭</span>
+                <input 
+                    type="text" 
+                    class="main-input" 
+                    placeholder="Pergunte qualquer coisa..."
+                    autocomplete="off"
+                    autofocus
+                >
+                <button class="send-button">
+                    Enviar
+                    <span>→</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Ações Rápidas -->
+        <div class="quick-actions">
+            <div class="actions-header">
+                <h2 class="actions-title">Ações Rápidas</h2>
+                <button class="expand-button" onclick="toggleExpand()">
+                    <span>Mostrar mais</span>
+                    <span class="expand-icon">▼</span>
+                </button>
+            </div>
+            
+            <div class="actions-grid" id="actionsGrid">
+                <!-- Primeiras 4 ações sempre visíveis -->
+                <div class="action-card">
+                    <span class="action-icon">🎨</span>
+                    <div class="action-content">
+                        <div class="action-title">Criar Design</div>
+                        <div class="action-description">Desenvolver novos projetos</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">🔧</span>
+                    <div class="action-content">
+                        <div class="action-title">Suporte Técnico</div>
+                        <div class="action-description">Ajuda com equipamentos</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">📚</span>
+                    <div class="action-content">
+                        <div class="action-title">Tutoriais</div>
+                        <div class="action-description">Aprender novas técnicas</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">💡</span>
+                    <div class="action-content">
+                        <div class="action-title">Ideias de Projeto</div>
+                        <div class="action-description">Inspiração para criar</div>
+                    </div>
+                </div>
+                
+                <!-- Ações adicionais (ocultas inicialmente) -->
+                <div class="action-card">
+                    <span class="action-icon">🖨️</span>
+                    <div class="action-content">
+                        <div class="action-title">Impressão 3D</div>
+                        <div class="action-description">Configurar impressoras</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">⚡</span>
+                    <div class="action-content">
+                        <div class="action-title">Eletrônica</div>
+                        <div class="action-description">Projetos com Arduino</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">🪚</span>
+                    <div class="action-content">
+                        <div class="action-title">Marcenaria</div>
+                        <div class="action-description">Trabalhos em madeira</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">🎯</span>
+                    <div class="action-content">
+                        <div class="action-title">Corte a Laser</div>
+                        <div class="action-description">Preparar arquivos</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">🤝</span>
+                    <div class="action-content">
+                        <div class="action-title">Colaborar</div>
+                        <div class="action-description">Encontrar parceiros</div>
+                    </div>
+                </div>
+                
+                <div class="action-card">
+                    <span class="action-icon">📅</span>
+                    <div class="action-content">
+                        <div class="action-title">Agendar Visita</div>
+                        <div class="action-description">Reservar horário</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Função para alternar expansão
+        function toggleExpand() {
+            const grid = document.getElementById('actionsGrid');
+            const button = document.querySelector('.expand-button');
+            const buttonText = button.querySelector('span:first-child');
+            
+            grid.classList.toggle('expanded');
+            button.classList.toggle('expanded');
+            
+            if (grid.classList.contains('expanded')) {
+                buttonText.textContent = 'Mostrar menos';
+            } else {
+                buttonText.textContent = 'Mostrar mais';
+            }
+        }
+        
+        // Atualizar saudação baseada no horário
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.querySelector('.time-greeting');
+            const userName = 'João'; // Isso viria do sistema de login
+            
+            let greeting = 'Olá';
+            if (hour >= 5 && hour < 12) {
+                greeting = 'Bom dia';
+            } else if (hour >= 12 && hour < 18) {
+                greeting = 'Boa tarde';
+            } else if (hour >= 18 && hour < 23) {
+                greeting = 'Boa noite';
+            } else {
+                greeting = 'Boa madrugada';
+            }
+            
+            greetingEl.textContent = greeting;
+        }
+        
+        // Inicializar
+        updateGreeting();
+        
+        // Adicionar efeito de foco no input
+        const inputWrapper = document.querySelector('.input-wrapper');
+        const mainInput = document.querySelector('.main-input');
+        
+        mainInput.addEventListener('focus', () => {
+            inputWrapper.style.transform = 'scale(1.02)';
+        });
+        
+        mainInput.addEventListener('blur', () => {
+            inputWrapper.style.transform = 'scale(1)';
+        });
+        
+        // Simular envio (para demonstração)
+        const sendButton = document.querySelector('.send-button');
+        sendButton.addEventListener('click', () => {
+            const value = mainInput.value.trim();
+            if (value) {
+                console.log('Enviando:', value);
+                // Aqui você integraria com o sistema de chat
+                mainInput.value = '';
+            }
+        });
+        
+        // Enter para enviar
+        mainInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+    </script>
+</body>
+</html>
