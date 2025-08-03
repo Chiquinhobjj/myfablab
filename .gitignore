@@ -4,6 +4,9 @@
 .env.production
 .env.*
 
+# API Keys - IMPORTANTE: Nunca commitar!
+config/api-keys.js
+
 # Backup do app duplicado
 app_1.js
 

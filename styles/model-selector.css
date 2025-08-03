@@ -1,0 +1,428 @@
+/* Estilos para o seletor de modelos estilo OpenRouter */
+
+.model-selector {
+    width: 100%;
+    padding: 24px;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.model-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.model-selector-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* Toggle de visualização */
+.model-view-toggle {
+    display: flex;
+    gap: 4px;
+    background: var(--color-secondary);
+    padding: 4px;
+    border-radius: var(--radius-md);
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--color-text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-btn:hover {
+    background: var(--color-secondary-hover);
+}
+
+.view-btn.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Filtros */
+.model-filters {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-search {
+    flex: 1;
+    min-width: 250px;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.filter-search-input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    transition: border-color 0.2s ease;
+}
+
+.filter-search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 4px;
+    background: var(--color-secondary);
+    padding: 4px;
+    border-radius: var(--radius-md);
+}
+
+.filter-btn {
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    background: var(--color-secondary-hover);
+}
+
+.filter-btn.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+/* Lista de modelos - Grid View */
+.model-list.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.model-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.model-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.model-card.selected {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.05);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.model-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 12px;
+}
+
+.model-info {
+    flex: 1;
+}
+
+.model-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.model-provider {
+    margin: 2px 0 0 0;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+}
+
+.model-badge {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.model-badge.free {
+    background: rgba(var(--color-success-rgb), 0.1);
+    color: var(--color-success);
+}
+
+.model-description {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.model-capabilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.capability-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--color-secondary);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    color: var(--color-text);
+}
+
+.capability-chip.small {
+    padding: 2px 6px;
+    font-size: 11px;
+}
+
+.model-stats {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.model-strengths {
+    font-size: 14px;
+}
+
+.model-strengths strong {
+    color: var(--color-text);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.model-strengths ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--color-text-secondary);
+}
+
+.model-strengths li {
+    margin: 2px 0;
+}
+
+.model-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.model-date {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+}
+
+.select-model-btn {
+    padding: 8px 16px;
+    border: none;
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-model-btn:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-1px);
+}
+
+.select-model-btn.small {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+/* Lista de modelos - Table View */
+.model-list.table {
+    overflow-x: auto;
+}
+
+.models-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.models-table thead {
+    background: var(--color-secondary);
+}
+
+.models-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.models-table tbody tr {
+    border-bottom: 1px solid var(--color-border);
+    transition: background 0.2s ease;
+}
+
+.models-table tbody tr:hover {
+    background: var(--color-secondary);
+}
+
+.models-table tbody tr.selected {
+    background: rgba(var(--color-primary-rgb), 0.05);
+}
+
+.models-table td {
+    padding: 12px;
+    vertical-align: top;
+}
+
+.table-model-info strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-text);
+}
+
+.model-description-table {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+}
+
+.table-capabilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* Estado vazio */
+.no-models {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--color-text-secondary);
+    font-size: 16px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .model-selector {
+        padding: 16px;
+    }
+    
+    .model-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-search {
+        min-width: auto;
+    }
+    
+    .model-list.grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .models-table {
+        font-size: 12px;
+    }
+    
+    .models-table th,
+    .models-table td {
+        padding: 8px;
+    }
+}

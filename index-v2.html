@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFabLab Chat AI - Converse com Múltiplos Modelos de IA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/model-selector.css">
+    <link rel="stylesheet" href="fix-styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="header-title">🚀 MyFabLab Chat AI</h1>
+                <div class="header-actions">
+                    <button class="btn btn--outline btn--sm" id="themeToggle">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <button class="btn btn--secondary btn--sm" id="settingsBtn">
+                        ⚙️ Status APIs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Model Selection -->
+                <div class="sidebar-section">
+                    <h3>Modelo de IA</h3>
+                    <button class="form-control model-select-btn" id="modelSelect">
+                        🔍 Selecionar Modelo...
+                    </button>
+                </div>
+
+                <!-- Settings -->
+                <div class="sidebar-section">
+                    <h3>Configurações</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="temperature">Temperature: <span id="tempValue">0.7</span></label>
+                        <input type="range" id="temperature" min="0.1" max="2" step="0.1" value="0.7" class="range-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="maxTokens">Max Tokens: <span id="tokensValue">2000</span></label>
+                        <input type="range" id="maxTokens" min="100" max="4000" step="100" value="2000" class="range-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="systemPrompt">System Prompt</label>
+                        <textarea class="form-control" id="systemPrompt" rows="3" placeholder="Você é um assistente AI útil e conhecedor.">Você é um assistente AI útil e conhecedor.</textarea>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="sidebar-section">
+                    <h3>Ações</h3>
+                    <button class="btn btn--outline btn--full-width" id="clearChat">🗑️ Limpar Conversa</button>
+                    <button class="btn btn--outline btn--full-width" id="exportChat">📄 Exportar Chat</button>
+                </div>
+
+                <!-- Quick Prompts -->
+                <div class="sidebar-section">
+                    <h3>Prompts Rápidos</h3>
+                    <div class="quick-prompts" id="quickPrompts">
+                        <!-- Quick prompts will be populated here -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Chat Area -->
+            <div class="chat-container">
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Model selector will be shown here initially -->
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <textarea class="chat-input" id="messageInput" placeholder="Selecione um modelo para começar..." rows="1" disabled></textarea>
+                        <button class="send-button" id="sendButton" disabled>
+                            <span class="send-icon">📤</span>
+                        </button>
+                    </div>
+                    <div class="chat-info">
+                        <span id="statusText">Selecione um modelo</span>
+                        <span id="tokenCount">0 tokens</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal hidden" id="settingsModal">
+        <!-- Content will be dynamically generated -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Gerando resposta...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Styles for new elements -->
+    <style>
+        .model-select-btn {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-surface);
+            color: var(--color-text);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .model-select-btn:hover {
+            border-color: var(--color-primary);
+            background: var(--color-secondary);
+        }
+
+        .model-info-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .info-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--color-text);
+        }
+
+        .info-item.free {
+            background: rgba(var(--color-success-rgb), 0.1);
+            color: var(--color-success);
+        }
+
+        .api-status {
+            margin-bottom: 16px;
+        }
+
+        .api-status h4 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            color: var(--color-text);
+        }
+
+        .api-stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+        }
+
+        .api-name {
+            font-weight: 500;
+            color: var(--color-text);
+        }
+
+        .api-requests {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                top: 80px;
+                bottom: 0;
+                width: 280px;
+                background: var(--color-surface);
+                z-index: 50;
+                transition: left 0.3s ease;
+                overflow-y: auto;
+                box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .chat-container {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <!-- Scripts com módulos ES6 -->
+    <script type="module" src="app-v2.js"></script>
+    <script src="fix-app.js"></script>
+</body>
+</html>
