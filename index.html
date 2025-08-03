@@ -1343,15 +1343,6 @@
             }
         });
 
-        // Tornar funções globais para garantir acesso
-        window.toggleSidebar = toggleSidebar;
-        window.toggleModelDropdown = toggleModelDropdown;
-        window.sendMessage = sendMessage;
-        window.selectModel = selectModel;
-        window.quickAction = quickAction;
-        window.useGPT = useGPT;
-        window.toggleExpand = toggleExpand;
-        window.showGPTSection = showGPTSection;
         
         // Toggle sidebar
         function toggleSidebar() {
@@ -1753,6 +1744,16 @@
                 sendMessage();
             }, 500);
         }
+        
+        // Tornar funções globais para garantir acesso (no final, após todas serem definidas)
+        window.toggleSidebar = toggleSidebar;
+        window.toggleModelDropdown = toggleModelDropdown;
+        window.sendMessage = sendMessage;
+        window.selectModel = selectModel;
+        window.quickAction = quickAction;
+        window.useGPT = useGPT;
+        window.toggleExpand = toggleExpand;
+        window.showGPTSection = showGPTSection;
     </script>
     
     <!-- Inicialização inline como fallback -->
