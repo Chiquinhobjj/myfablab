@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Dropdown</title>
+</head>
+<body>
+    <h1>Debug do Dropdown</h1>
+    
+    <button onclick="testDropdown()">Testar Dropdown</button>
+    
+    <div id="results"></div>
+    
+    <script>
+        function testDropdown() {
+            const results = document.getElementById('results');
+            let html = '<h2>Resultados do Debug:</h2>';
+            
+            // 1. Verificar se o dropdown existe
+            const dropdown = document.getElementById('modelDropdown');
+            html += '<p>1. Dropdown existe? ' + (dropdown ? 'SIM' : 'NÃO') + '</p>';
+            
+            if (dropdown) {
+                // 2. Verificar conteúdo
+                html += '<p>2. Conteúdo do dropdown: ' + (dropdown.innerHTML ? 'TEM CONTEÚDO' : 'VAZIO') + '</p>';
+                html += '<p>3. Tamanho do conteúdo: ' + dropdown.innerHTML.length + ' caracteres</p>';
+                
+                // 3. Verificar estilos
+                const styles = window.getComputedStyle(dropdown);
+                html += '<p>4. Display: ' + styles.display + '</p>';
+                html += '<p>5. Position: ' + styles.position + '</p>';
+                html += '<p>6. Z-index: ' + styles.zIndex + '</p>';
+                html += '<p>7. Visibility: ' + styles.visibility + '</p>';
+                html += '<p>8. Opacity: ' + styles.opacity + '</p>';
+                html += '<p>9. Width: ' + styles.width + '</p>';
+                html += '<p>10. Height: ' + styles.height + '</p>';
+                
+                // 4. Verificar posição
+                const rect = dropdown.getBoundingClientRect();
+                html += '<p>11. Top: ' + rect.top + '</p>';
+                html += '<p>12. Left: ' + rect.left + '</p>';
+                html += '<p>13. Width (real): ' + rect.width + '</p>';
+                html += '<p>14. Height (real): ' + rect.height + '</p>';
+                
+                // 5. Tentar forçar display
+                dropdown.style.display = 'block';
+                dropdown.style.visibility = 'visible';
+                dropdown.style.opacity = '1';
+                dropdown.style.zIndex = '99999';
+                dropdown.style.position = 'fixed';
+                dropdown.style.top = '100px';
+                dropdown.style.left = '100px';
+                dropdown.style.width = '300px';
+                dropdown.style.minHeight = '200px';
+                dropdown.style.background = 'red';
+                dropdown.style.border = '5px solid blue';
+                
+                html += '<p>15. FORCEI TODOS OS ESTILOS - Veja se aparece uma caixa vermelha com borda azul!</p>';
+                
+                // 6. Se ainda estiver vazio, adicionar conteúdo
+                if (!dropdown.innerHTML) {
+                    dropdown.innerHTML = '<div style="padding: 20px; color: white;">TESTE - SE VOCÊ VÊ ISSO, O DROPDOWN FUNCIONA!</div>';
+                    html += '<p>16. Adicionei conteúdo de teste ao dropdown</p>';
+                }
+            }
+            
+            results.innerHTML = html;
+        }
+        
+        // Rodar automaticamente ao carregar
+        window.onload = function() {
+            // Esperar a página principal carregar no iframe
+            const iframe = document.createElement('iframe');
+            iframe.src = 'http://localhost:3001';
+            iframe.style.width = '100%';
+            iframe.style.height = '500px';
+            iframe.style.border = '2px solid black';
+            document.body.appendChild(iframe);
+            
+            setTimeout(() => {
+                console.log('Iframe carregado, pode testar!');
+            }, 2000);
+        };
+    </script>
+</body>
+</html>

@@ -1427,33 +1427,58 @@
                 console.error('Dropdown não encontrado!');
                 return;
             }
-            dropdown.innerHTML = models.map(group => `
-                <div class="model-group">
-                    <div class="model-group-title">${group.group}</div>
-                    ${group.items.map(model => `
-                        <div class="model-option ${model.id === selectedModelId ? 'selected' : ''}" 
-                             data-model-id="${model.id}"
-                             data-model-name="${model.name}">
-                            <div>
-                                <div class="model-name">${model.name}</div>
-                                <div class="model-description">${model.desc}</div>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
             
-            // Adicionar eventos de clique após criar o HTML
+            // Limpar dropdown
+            dropdown.innerHTML = '';
+            
+            // Criar elementos DOM ao invés de usar innerHTML
+            models.forEach(group => {
+                // Criar grupo
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'model-group';
+                
+                // Criar título do grupo
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'model-group-title';
+                groupTitle.textContent = group.group;
+                groupDiv.appendChild(groupTitle);
+                
+                // Criar opções
+                group.items.forEach(model => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'model-option';
+                    if (model.id === selectedModelId) {
+                        optionDiv.className += ' selected';
+                    }
+                    
+                    const innerDiv = document.createElement('div');
+                    
+                    const nameDiv = document.createElement('div');
+                    nameDiv.className = 'model-name';
+                    nameDiv.textContent = model.name;
+                    
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'model-description';
+                    descDiv.textContent = model.desc;
+                    
+                    innerDiv.appendChild(nameDiv);
+                    innerDiv.appendChild(descDiv);
+                    optionDiv.appendChild(innerDiv);
+                    
+                    // Adicionar evento de clique
+                    optionDiv.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectModel(model.id, model.name);
+                    });
+                    
+                    groupDiv.appendChild(optionDiv);
+                });
+                
+                dropdown.appendChild(groupDiv);
+            });
+            
             const options = dropdown.querySelectorAll('.model-option');
             console.log(`Dropdown populado com ${options.length} opções`);
-            options.forEach(option => {
-                option.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const modelId = this.dataset.modelId;
-                    const modelName = this.dataset.modelName;
-                    selectModel(modelId, modelName);
-                });
-            });
         }
 
         // Select model
