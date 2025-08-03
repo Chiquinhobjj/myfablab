@@ -1,21 +1,29 @@
 {
-  "builds": [
-    {
-      "src": "backend/server.js",
-      "use": "@vercel/node"
+  "functions": {
+    "backend/server.js": {
+      "runtime": "@vercel/node@3.0.0"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/server.js"
+      "source": "/api/:path*",
+      "destination": "/backend/server.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "source": "/",
+      "destination": "/public/index.html"
+    },
+    {
+      "source": "/arena",
+      "destination": "/public/index-arena.html"
+    },
+    {
+      "source": "/premium", 
+      "destination": "/public/index-premium.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/public/admin.html"
     }
-  ],
-  "env": {
-    "OPENROUTER_API_KEY": "@openrouter-api-key"
-  }
+  ]
 }
