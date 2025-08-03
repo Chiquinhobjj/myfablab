@@ -1,0 +1,44 @@
+{
+  "services": [
+    {
+      "type": "app",
+      "data": {
+        "projectName": "myfablab-chat",
+        "serviceName": "web",
+        "source": {
+          "type": "github",
+          "repo": "https://github.com/YOUR_GITHUB/myfablab-chat",
+          "ref": "main",
+          "path": "/"
+        },
+        "build": {
+          "type": "dockerfile",
+          "dockerfilePath": "./Dockerfile"
+        },
+        "deploy": {
+          "replicas": 1,
+          "command": "",
+          "envs": [
+            {
+              "key": "NODE_ENV",
+              "value": "production"
+            }
+          ],
+          "type": "docker"
+        },
+        "ports": [
+          {
+            "published": 80,
+            "target": 80
+          }
+        ],
+        "domains": [
+          {
+            "host": "$(EASYPANEL_DOMAIN)",
+            "port": 80
+          }
+        ]
+      }
+    }
+  ]
+}

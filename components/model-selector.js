@@ -1,5 +1,5 @@
 // Componente de seleção de modelos estilo OpenRouter
-import { OPENROUTER_MODELS, filterModels, getAllProviders, getAllCapabilities } from '../config/models-database.js';
+import { FREE_OPENROUTER_MODELS, filterFreeModels, getFreeModelProviders, getFreeModelCapabilities, groupModelsByCategory } from '../config/free-models-database.js';
 
 export class ModelSelector {
     constructor(container, onModelSelect) {
@@ -7,7 +7,7 @@ export class ModelSelector {
         this.onModelSelect = onModelSelect;
         this.currentFilter = {
             search: '',
-            free: null,
+            free: true, // Sempre mostrar apenas gratuitos
             provider: null,
             capability: null,
             view: 'grid' // 'grid' ou 'table'
@@ -26,7 +26,10 @@ export class ModelSelector {
             <div class="model-selector">
                 <!-- Header com filtros -->
                 <div class="model-selector-header">
-                    <h2>Selecionar Modelo de IA</h2>
+                    <h2>Selecionar Modelo de IA Gratuito</h2>
+                    <div class="model-stats">
+                        <span class="stat-badge">🎉 59 modelos gratuitos disponíveis!</span>
+                    </div>
                     <div class="model-view-toggle">
                         <button class="view-btn ${this.currentFilter.view === 'grid' ? 'active' : ''}" data-view="grid">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -56,18 +59,18 @@ export class ModelSelector {
                         <input type="text" placeholder="Buscar modelos..." class="filter-search-input" value="${this.currentFilter.search}">
                     </div>
 
-                    <!-- Filtro de preço -->
+                    <!-- Filtro de contexto -->
                     <div class="filter-group">
-                        <label>Preço:</label>
+                        <label>Contexto:</label>
                         <div class="filter-buttons">
-                            <button class="filter-btn ${this.currentFilter.free === null ? 'active' : ''}" data-filter="free" data-value="all">
+                            <button class="filter-btn ${!this.currentFilter.minContext ? 'active' : ''}" data-filter="context" data-value="all">
                                 Todos
                             </button>
-                            <button class="filter-btn ${this.currentFilter.free === true ? 'active' : ''}" data-filter="free" data-value="true">
-                                Gratuitos
+                            <button class="filter-btn ${this.currentFilter.minContext === 100000 ? 'active' : ''}" data-filter="context" data-value="100k">
+                                100K+
                             </button>
-                            <button class="filter-btn ${this.currentFilter.free === false ? 'active' : ''}" data-filter="free" data-value="false">
-                                Premium
+                            <button class="filter-btn ${this.currentFilter.minContext === 500000 ? 'active' : ''}" data-filter="context" data-value="500k">
+                                500K+
                             </button>
                         </div>
                     </div>
@@ -77,7 +80,7 @@ export class ModelSelector {
                         <label>Provider:</label>
                         <select class="filter-select" data-filter="provider">
                             <option value="">Todos</option>
-                            ${getAllProviders().map(provider => 
+                            ${getFreeModelProviders().map(provider => 
                                 `<option value="${provider}" ${this.currentFilter.provider === provider ? 'selected' : ''}>${provider}</option>`
                             ).join('')}
                         </select>
@@ -88,7 +91,7 @@ export class ModelSelector {
                         <label>Capacidade:</label>
                         <select class="filter-select" data-filter="capability">
                             <option value="">Todas</option>
-                            ${getAllCapabilities().map(cap => 
+                            ${getFreeModelCapabilities().map(cap => 
                                 `<option value="${cap}" ${this.currentFilter.capability === cap ? 'selected' : ''}>${this.getCapabilityLabel(cap)}</option>`
                             ).join('')}
                         </select>
@@ -104,17 +107,46 @@ export class ModelSelector {
     }
 
     renderModels() {
-        const models = filterModels(this.currentFilter);
+        const models = filterFreeModels(this.currentFilter);
         
         if (models.length === 0) {
             return '<div class="no-models">Nenhum modelo encontrado com os filtros selecionados.</div>';
         }
 
-        if (this.currentFilter.view === 'table') {
-            return this.renderTableView(models);
+        // Adiciona seção de categorias antes da lista
+        const categories = groupModelsByCategory();
+        let categorySection = '';
+        
+        if (!this.currentFilter.search && !this.currentFilter.provider && !this.currentFilter.capability) {
+            categorySection = `
+                <div class="model-categories">
+                    <h3>Categorias Populares</h3>
+                    <div class="category-chips">
+                        <button class="category-chip" data-category="ultra-context">
+                            🌟 Ultra Context (${categories['Ultra Context (>500K)'].length})
+                        </button>
+                        <button class="category-chip" data-category="reasoning">
+                            🧠 Raciocínio (${categories['Reasoning & Thinking'].length})
+                        </button>
+                        <button class="category-chip" data-category="vision">
+                            👁️ Visão (${categories['Vision & Multimodal'].length})
+                        </button>
+                        <button class="category-chip" data-category="code">
+                            💻 Código (${categories['Code & Development'].length})
+                        </button>
+                        <button class="category-chip" data-category="uncensored">
+                            🔓 Sem Censura (${categories['Uncensored'].length})
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
-        return this.renderGridView(models);
+        if (this.currentFilter.view === 'table') {
+            return categorySection + this.renderTableView(models);
+        }
+
+        return categorySection + this.renderGridView(models);
     }
 
     renderGridView(models) {
@@ -125,7 +157,14 @@ export class ModelSelector {
                         <h3 class="model-name">${model.name}</h3>
                         <p class="model-provider">${model.provider}</p>
                     </div>
-                    ${model.isFree ? '<span class="model-badge free">Gratuito</span>' : ''}
+                    <div class="model-badges">
+                        <span class="model-badge free">Gratuito</span>
+                        ${model.tags.includes('new') ? '<span class="model-badge new">Novo</span>' : ''}
+                        ${model.contextLength >= 1000000 ? '<span class="model-badge ultra">1M+</span>' : ''}
+                        ${model.capabilities.includes('reasoning') ? '<span class="model-badge reasoning">🧠</span>' : ''}
+                        ${model.capabilities.includes('vision') ? '<span class="model-badge vision">👁️</span>' : ''}
+                        ${model.capabilities.includes('uncensored') ? '<span class="model-badge uncensored">🔓</span>' : ''}
+                    </div>
                 </div>
                 
                 <p class="model-description">${model.description}</p>
@@ -141,12 +180,10 @@ export class ModelSelector {
                         <span class="stat-label">Contexto:</span>
                         <span class="stat-value">${this.formatContextLength(model.contextLength)}</span>
                     </div>
-                    ${!model.isFree ? `
-                        <div class="stat">
-                            <span class="stat-label">Preço:</span>
-                            <span class="stat-value">$${model.pricing.prompt}/$${model.pricing.completion}</span>
-                        </div>
-                    ` : ''}
+                    <div class="stat">
+                        <span class="stat-label">Lançamento:</span>
+                        <span class="stat-value">${this.formatDate(model.releaseDate)}</span>
+                    </div>
                 </div>
                 
                 <div class="model-strengths">
@@ -230,10 +267,10 @@ export class ModelSelector {
                 const filter = btn.dataset.filter;
                 const value = btn.dataset.value;
                 
-                if (filter === 'free') {
-                    if (value === 'all') this.currentFilter.free = null;
-                    else if (value === 'true') this.currentFilter.free = true;
-                    else if (value === 'false') this.currentFilter.free = false;
+                if (filter === 'context') {
+                    if (value === 'all') this.currentFilter.minContext = null;
+                    else if (value === '100k') this.currentFilter.minContext = 100000;
+                    else if (value === '500k') this.currentFilter.minContext = 500000;
                 }
                 
                 this.updateModelList();
@@ -262,6 +299,32 @@ export class ModelSelector {
                 const modelId = card.dataset.modelId;
                 this.selectModel(modelId);
             }
+            
+            // Clique nas categorias
+            if (e.target.classList.contains('category-chip')) {
+                const category = e.target.dataset.category;
+                this.currentFilter.search = '';
+                this.currentFilter.provider = null;
+                
+                if (category === 'ultra-context') {
+                    this.currentFilter.minContext = 500000;
+                    this.currentFilter.capability = null;
+                } else if (category === 'reasoning') {
+                    this.currentFilter.capability = 'reasoning';
+                    this.currentFilter.minContext = null;
+                } else if (category === 'vision') {
+                    this.currentFilter.capability = 'vision';
+                    this.currentFilter.minContext = null;
+                } else if (category === 'code') {
+                    this.currentFilter.capability = 'code';
+                    this.currentFilter.minContext = null;
+                } else if (category === 'uncensored') {
+                    this.currentFilter.capability = 'uncensored';
+                    this.currentFilter.minContext = null;
+                }
+                
+                this.render(); // Re-render completo para atualizar filtros
+            }
         });
     }
 
@@ -271,7 +334,7 @@ export class ModelSelector {
     }
 
     selectModel(modelId) {
-        this.selectedModel = OPENROUTER_MODELS[modelId];
+        this.selectedModel = FREE_OPENROUTER_MODELS[modelId];
         if (this.onModelSelect) {
             this.onModelSelect(this.selectedModel);
         }
@@ -287,7 +350,15 @@ export class ModelSelector {
             'web-search': '🔍',
             'real-time': '⚡',
             'multilingual': '🌐',
-            'rag': '📚'
+            'rag': '📚',
+            'reasoning': '🧠',
+            'thinking': '💭',
+            'uncensored': '🔓',
+            'multimodal': '🎨',
+            'ultra-context': '🌟',
+            'math': '🔢',
+            'data-science': '📈',
+            'experimental': '🧪'
         };
         return icons[capability] || '✨';
     }
@@ -301,7 +372,15 @@ export class ModelSelector {
             'web-search': 'Busca Web',
             'real-time': 'Tempo Real',
             'multilingual': 'Multilingual',
-            'rag': 'RAG'
+            'rag': 'RAG',
+            'reasoning': 'Raciocínio',
+            'thinking': 'Pensamento',
+            'uncensored': 'Sem Censura',
+            'multimodal': 'Multimodal',
+            'ultra-context': 'Ultra Context',
+            'math': 'Matemática',
+            'data-science': 'Data Science',
+            'experimental': 'Experimental'
         };
         return labels[capability] || capability;
     }
