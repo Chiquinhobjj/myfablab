@@ -56,25 +56,38 @@
 }
 
 /* Garantir que elementos não sobreponham */
+/* REMOVIDO: regra global que estava quebrando cliques
 * {
   position: relative !important;
   z-index: auto !important;
 }
+*/
 
+/* Manter apenas z-index essenciais sem forçar position */
 .header {
   z-index: 100 !important;
+  position: sticky !important;
 }
 
 .modal {
   z-index: 1000 !important;
+  position: fixed !important;
 }
 
 .loading-overlay {
   z-index: 999 !important;
+  position: fixed !important;
 }
 
 .toast-container {
   z-index: 2000 !important;
+  position: fixed !important;
+}
+
+/* Garantir que botões e elementos clicáveis funcionem */
+button, a, .btn, .quick-prompt-btn, .model-card, .select-model-btn {
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
 /* Prevenir overflow de texto */

@@ -3,23 +3,30 @@
 
 export const API_KEYS = [
     {
+        id: 'myfablab-04',
+        key: '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',
+        name: 'MyFabLab API 4',
+        requestCount: 0,
+        lastUsed: null
+    },
+    {
         id: 'myfablab-01',
         key: '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',
-        name: 'MyFabLab API 1',
+        name: 'MyFabLab API 1 (inactive)',
         requestCount: 0,
         lastUsed: null
     },
     {
         id: 'myfablab-02', 
         key: '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',
-        name: 'MyFabLab API 2',
+        name: 'MyFabLab API 2 (inactive)',
         requestCount: 0,
         lastUsed: null
     },
     {
         id: 'myfablab-03',
         key: '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',
-        name: 'MyFabLab API 3',
+        name: 'MyFabLab API 3 (inactive)',
         requestCount: 0,
         lastUsed: null
     }

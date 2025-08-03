@@ -68,11 +68,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkOverlap = () => {
         const elements = document.querySelectorAll('.modal, .loading-overlay, .toast-container');
         elements.forEach(el => {
+            // Só ocultar se o elemento estiver visível mas sem conteúdo
             if (el.style.display !== 'none' && !el.classList.contains('hidden')) {
                 const rect = el.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
+                // Verificar se está bloqueando a tela sem ter conteúdo
+                if (rect.width > 0 && rect.height > 0 && !el.querySelector('*')) {
                     el.style.display = 'none';
-                    console.log('Elemento oculto corrigido:', el.className);
+                    console.log('Elemento vazio oculto:', el.className);
                 }
             }
         });

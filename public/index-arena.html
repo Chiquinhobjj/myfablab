@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFabLab AI - Arena</title>
+    <style>
+        :root {
+            --primary: #20808d;
+            --primary-hover: #1a6670;
+            --primary-light: rgba(32, 128, 141, 0.1);
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --background: #ffffff;
+            --surface: #f8f9fa;
+            --border: #e5e7eb;
+            --border-light: #f3f4f6;
+            --success: #10b981;
+            --error: #ef4444;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 30px;
+            background: var(--background);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: -1px;
+            color: var(--primary);
+        }
+
+        .arena-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--primary-light);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Model Selector */
+        .model-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .model-count {
+            padding: 8px 20px;
+            border: 1px solid var(--border);
+            background: var(--background);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .model-count:hover {
+            border-color: var(--primary);
+        }
+
+        .model-count.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Arena Container */
+        .arena-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Welcome State */
+        .welcome-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .welcome-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto 40px;
+        }
+
+        .feature-card {
+            padding: 24px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .feature-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 20px 30px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .input-wrapper {
+            position: relative;
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            transition: all 0.2s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .prompt-input {
+            width: 100%;
+            padding: 16px 20px;
+            padding-right: 60px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            min-height: 56px;
+            max-height: 120px;
+        }
+
+        .prompt-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .send-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .send-button:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Battle Options */
+        .battle-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .option-chip {
+            padding: 8px 16px;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .option-chip:hover {
+            border-color: var(--primary);
+        }
+
+        .option-chip.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Quick Actions / GPTs Section */
+        .quick-actions {
+            padding: 20px 30px;
+            background: var(--background);
+            border-top: 1px solid var(--border);
+        }
+
+        .quick-actions-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .quick-actions-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .quick-actions-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
+        }
+
+        .gpt-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gpt-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .gpt-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .gpt-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .gpt-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gpt-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Battle Arena */
+        .battle-container {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .battle-grid {
+            display: grid;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .battle-grid.cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .battle-grid.cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .battle-grid.cols-4 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        /* Fighter Card */
+        .fighter-card {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fighter-header {
+            padding: 16px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .fighter-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .fighter-stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .fighter-content {
+            padding: 20px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        .fighter-footer {
+            padding: 16px 20px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        .vote-button {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            background: var(--background);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .vote-button:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .vote-button.voted {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .battle-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .model-selector {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo-section">
+                    <h1 class="logo-text">MyFabLab</h1>
+                    <div class="arena-badge">
+                        <span>⚔️</span>
+                        <span>MMAI Arena</span>
+                    </div>
+                </div>
+                
+                <div class="model-selector">
+                    <button class="model-count active" onclick="setModelCount(2)">2 IAs</button>
+                    <button class="model-count" onclick="setModelCount(3)">3 IAs</button>
+                    <button class="model-count" onclick="setModelCount(4)">4 IAs</button>
+                </div>
+            </header>
+
+            <!-- Arena Container -->
+            <div class="arena-container">
+                <!-- Welcome State -->
+                <div class="welcome-state" id="welcomeState">
+                    <div class="welcome-icon">🏟️</div>
+                    <h2 class="welcome-title">Bem-vindo à MMAI Arena</h2>
+                    <p class="welcome-subtitle">Compare respostas de múltiplas IAs simultaneamente</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">🤖</div>
+                            <h3 class="feature-title">59 Modelos</h3>
+                            <p class="feature-desc">Gratuitos</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">⚡</div>
+                            <h3 class="feature-title">Respostas</h3>
+                            <p class="feature-desc">Simultâneas</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🗳️</div>
+                            <h3 class="feature-title">Vote na</h3>
+                            <p class="feature-desc">Melhor</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🏆</div>
+                            <h3 class="feature-title">Rankings</h3>
+                            <p class="feature-desc">Em Tempo Real</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Battle Container (Hidden initially) -->
+                <div class="battle-container" id="battleContainer">
+                    <div class="battle-grid cols-2" id="battleGrid">
+                        <!-- Fighter cards will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea 
+                            class="prompt-input" 
+                            id="promptInput"
+                            placeholder="Digite sua pergunta e veja as IAs competirem..."
+                            rows="1"
+                        ></textarea>
+                        <button class="send-button" onclick="startBattle()">
+                            ⚔️
+                        </button>
+                    </div>
+                    
+                    <div class="battle-options">
+                        <div class="option-chip active" onclick="toggleOption(this, 'blind')">
+                            <span>🎭</span>
+                            <span>Modo Cego</span>
+                        </div>
+                        <div class="option-chip" onclick="toggleOption(this, 'speed')">
+                            <span>⚡</span>
+                            <span>Mostrar Velocidade</span>
+                        </div>
+                        <div class="option-chip" onclick="toggleOption(this, 'cost')">
+                            <span>💰</span>
+                            <span>Mostrar Custo</span>
+                        </div>
+                        <div class="option-chip" onclick="toggleOption(this, 'category')">
+                            <span>📊</span>
+                            <span>Por Categoria</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions / GPTs Section -->
+            <div class="quick-actions">
+                <div class="quick-actions-container">
+                    <div class="quick-actions-header">
+                        <h3 class="quick-actions-title">Agentes & Prompts Rápidos</h3>
+                    </div>
+                    
+                    <div class="quick-actions-grid">
+                        <div class="gpt-card" onclick="useGPT('web-dev')">
+                            <div class="gpt-icon">💻</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Desenvolvimento Web</div>
+                                <div class="gpt-description">Crie sites e aplicações</div>
+                            </div>
+                        </div>
+                        
+                        <div class="gpt-card" onclick="useGPT('researcher')">
+                            <div class="gpt-icon">🔍</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Pesquisador</div>
+                                <div class="gpt-description">Investigue qualquer tópico</div>
+                            </div>
+                        </div>
+                        
+                        <div class="gpt-card" onclick="useGPT('writer')">
+                            <div class="gpt-icon">✍️</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Escritor Criativo</div>
+                                <div class="gpt-description">Crie textos envolventes</div>
+                            </div>
+                        </div>
+                        
+                        <div class="gpt-card" onclick="useGPT('analyst')">
+                            <div class="gpt-icon">📊</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Analista de Dados</div>
+                                <div class="gpt-description">Analise e visualize dados</div>
+                            </div>
+                        </div>
+                        
+                        <div class="gpt-card" onclick="useGPT('teacher')">
+                            <div class="gpt-icon">🎓</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Professor</div>
+                                <div class="gpt-description">Explique conceitos complexos</div>
+                            </div>
+                        </div>
+                        
+                        <div class="gpt-card" onclick="useGPT('translator')">
+                            <div class="gpt-icon">🌐</div>
+                            <div class="gpt-info">
+                                <div class="gpt-name">Tradutor</div>
+                                <div class="gpt-description">Traduza entre idiomas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuration - usando backend seguro
+        const API_URL = '/api/chat'; // Backend proxy seguro
+        const ARENA_API_URL = '/api/arena/battle'; // Endpoint para batalhas
+
+        // State
+        let currentModelCount = 2;
+        let currentOptions = new Set(['blind']);
+        let battleActive = false;
+
+        // Available Models
+        const availableModels = [
+            'meta-llama/llama-3.2-3b-instruct:free',
+            'google/gemini-2.0-flash-exp:free',
+            'qwen/qwen-2.5-72b-instruct:free',
+            'mistralai/mistral-7b-instruct:free',
+            'microsoft/phi-3-mini-128k-instruct:free',
+            'openchat/openchat-7b:free',
+            'gryphe/mythomist-7b:free',
+            'huggingfaceh4/zephyr-7b-beta:free'
+        ];
+
+        // GPT Templates
+        const gptTemplates = {
+            'web-dev': 'Você é um desenvolvedor web experiente. Ajude-me a criar ',
+            'researcher': 'Você é um pesquisador acadêmico. Pesquise sobre ',
+            'writer': 'Você é um escritor criativo. Escreva ',
+            'analyst': 'Você é um analista de dados. Analise ',
+            'teacher': 'Você é um professor experiente. Explique ',
+            'translator': 'Você é um tradutor profissional. Traduza '
+        };
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('promptInput');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Handle Enter key
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                startBattle();
+            }
+        });
+
+        // Set Model Count
+        function setModelCount(count) {
+            currentModelCount = count;
+            document.querySelectorAll('.model-count').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const grid = document.getElementById('battleGrid');
+            grid.className = `battle-grid cols-${count}`;
+        }
+
+        // Toggle Options
+        function toggleOption(element, option) {
+            element.classList.toggle('active');
+            if (currentOptions.has(option)) {
+                currentOptions.delete(option);
+            } else {
+                currentOptions.add(option);
+            }
+        }
+
+        // Use GPT Template
+        function useGPT(type) {
+            const template = gptTemplates[type];
+            if (template) {
+                textarea.value = template;
+                textarea.focus();
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            }
+        }
+
+        // Start Battle
+        async function startBattle() {
+            const prompt = textarea.value.trim();
+            if (!prompt) return;
+
+            // Hide welcome state
+            document.getElementById('welcomeState').style.display = 'none';
+            document.getElementById('battleContainer').style.display = 'block';
+
+            // Clear previous battle
+            const grid = document.getElementById('battleGrid');
+            grid.innerHTML = '';
+
+            // Select random models
+            const selectedModels = [...availableModels]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, currentModelCount);
+
+            // Create fighter cards
+            selectedModels.forEach((model, index) => {
+                const card = createFighterCard(model, index);
+                grid.appendChild(card);
+                
+                // Start API call
+                callModel(model, prompt, index);
+            });
+
+            battleActive = true;
+        }
+
+        // Create Fighter Card
+        function createFighterCard(model, index) {
+            const card = document.createElement('div');
+            card.className = 'fighter-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            const isBlind = currentOptions.has('blind');
+            const showSpeed = currentOptions.has('speed');
+            const showCost = currentOptions.has('cost');
+            
+            const modelName = isBlind ? `Modelo ${String.fromCharCode(65 + index)}` : model.split('/')[1];
+            
+            card.innerHTML = `
+                <div class="fighter-header">
+                    <div class="fighter-name">${modelName}</div>
+                    <div class="fighter-stats">
+                        ${showSpeed ? '<span id="speed-' + index + '">⚡ --ms</span>' : ''}
+                        ${showCost ? '<span>💰 Grátis</span>' : ''}
+                    </div>
+                </div>
+                <div class="fighter-content" id="content-${index}">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+                <div class="fighter-footer">
+                    <button class="vote-button" onclick="vote(${index}, '${model}')">
+                        👍 Votar
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Call Model API
+        async function callModel(model, prompt, index) {
+            const startTime = Date.now();
+            const contentDiv = document.getElementById(`content-${index}`);
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [
+                            { role: 'system', content: 'Você é um assistente útil. Responda em português.' },
+                            { role: 'user', content: prompt }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                
+                // Update content
+                contentDiv.innerHTML = `<p>${content}</p>`;
+                
+                // Update speed if showing
+                if (currentOptions.has('speed')) {
+                    const speedSpan = document.getElementById(`speed-${index}`);
+                    if (speedSpan) {
+                        const elapsed = Date.now() - startTime;
+                        speedSpan.textContent = `⚡ ${elapsed}ms`;
+                    }
+                }
+                
+            } catch (error) {
+                contentDiv.innerHTML = `<p style="color: var(--error);">Erro ao obter resposta. Tente novamente.</p>`;
+            }
+        }
+
+        // Vote
+        function vote(index, model) {
+            const button = event.target;
+            button.classList.toggle('voted');
+            
+            // Reveal models if blind mode
+            if (currentOptions.has('blind')) {
+                document.querySelectorAll('.fighter-name').forEach((el, i) => {
+                    const selectedModel = [...availableModels]
+                        .sort(() => Math.random() - 0.5)
+                        .slice(0, currentModelCount)[i];
+                    if (selectedModel) {
+                        el.textContent = selectedModel.split('/')[1];
+                    }
+                });
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            textarea.focus();
+        });
+    </script>
+</body>
+</html>

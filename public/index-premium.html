@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFabLab AI</title>
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #666666;
+            --background: #ffffff;
+            --surface: #f7f7f7;
+            --border: #e5e5e5;
+            --hover: #f0f0f0;
+            --accent: #0066FF;
+            --text-primary: #000000;
+            --text-secondary: #666666;
+            --sidebar-width: 260px;
+            --header-height: 52px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout Structure */
+        .app {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar-header {
+            height: var(--header-height);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .new-chat-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-chat-btn:hover {
+            background: #1a1a1a;
+            transform: translateY(-1px);
+        }
+
+        .new-chat-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Chat List */
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .chat-item {
+            padding: 12px 16px;
+            margin: 2px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item:hover {
+            background: var(--hover);
+            color: var(--text-primary);
+        }
+
+        .chat-item.active {
+            background: var(--hover);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .model-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--background);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .model-selector:hover {
+            border-color: var(--secondary);
+        }
+
+        .model-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .model-selector select {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            left: 0;
+            top: 0;
+        }
+
+        /* Chat Container */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            animation: messageSlide 0.3s ease-out;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent);
+            color: white;
+        }
+
+        .message.assistant .message-avatar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .message-content {
+            flex: 1;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .message-content p {
+            margin-bottom: 12px;
+        }
+
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .message-content code {
+            background: var(--surface);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: "SF Mono", Monaco, monospace;
+            font-size: 13px;
+        }
+
+        .message-content pre {
+            background: var(--surface);
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .message-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: typingPulse 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingPulse {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Input Area */
+        .input-area {
+            border-top: 1px solid var(--border);
+            padding: 16px 24px 24px;
+            background: var(--background);
+        }
+
+        .input-container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        #messageInput {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: none;
+            font-size: 15px;
+            line-height: 1.5;
+            resize: none;
+            min-height: 24px;
+            max-height: 200px;
+            font-family: inherit;
+        }
+
+        #messageInput::placeholder {
+            color: var(--secondary);
+        }
+
+        .send-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            background: #1a1a1a;
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                height: 100%;
+                z-index: 100;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .header {
+                padding: 0 16px;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #ffffff;
+                --secondary: #999999;
+                --background: #000000;
+                --surface: #1a1a1a;
+                --border: #2a2a2a;
+                --hover: #2a2a2a;
+                --accent: #0A84FF;
+                --text-primary: #ffffff;
+                --text-secondary: #999999;
+            }
+
+            .model-selector {
+                background: var(--surface);
+            }
+
+            .send-button {
+                background: var(--primary);
+                color: var(--background);
+            }
+
+            .send-button:hover {
+                background: #e5e5e5;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">MyFabLab AI</div>
+                <button class="new-chat-btn">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M8 1v14M1 8h14"/>
+                    </svg>
+                    Nova conversa
+                </button>
+            </div>
+            <div class="chat-list">
+                <div class="chat-item active">Conversa atual</div>
+                <div class="chat-item">Análise de dados Python</div>
+                <div class="chat-item">Ideias para startup</div>
+                <div class="chat-item">Receita de bolo de chocolate</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Header -->
+            <header class="header">
+                <div class="model-selector">
+                    <span class="model-name">Llama 3.2 3B</span>
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6l4 4 4-4"/>
+                    </svg>
+                    <select id="modelSelect">
+                        <optgroup label="Recomendados">
+                            <option value="meta-llama/llama-3.2-3b-instruct:free" selected>Llama 3.2 3B</option>
+                            <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 Flash</option>
+                            <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B</option>
+                        </optgroup>
+                        <optgroup label="Ultra Context">
+                            <option value="openrouter/horizon-beta">Horizon Beta (256K)</option>
+                            <option value="google/gemini-2.0-flash-exp:free">Gemini 2.0 (1M)</option>
+                        </optgroup>
+                        <optgroup label="Meta Llama">
+                            <option value="meta-llama/llama-3.2-90b-vision-instruct:free">Llama 3.2 90B Vision</option>
+                            <option value="meta-llama/llama-3.2-11b-vision-instruct:free">Llama 3.2 11B Vision</option>
+                            <option value="meta-llama/llama-3.2-3b-instruct:free">Llama 3.2 3B</option>
+                            <option value="meta-llama/llama-3.2-1b-instruct:free">Llama 3.2 1B</option>
+                            <option value="meta-llama/llama-3.1-70b-instruct:free">Llama 3.1 70B</option>
+                            <option value="meta-llama/llama-3.1-8b-instruct:free">Llama 3.1 8B</option>
+                            <option value="meta-llama/llama-3-8b-instruct:free">Llama 3 8B</option>
+                        </optgroup>
+                        <optgroup label="Mistral">
+                            <option value="mistralai/mistral-7b-instruct:free">Mistral 7B</option>
+                            <option value="mistralai/mistral-7b-instruct-v0.1:free">Mistral 7B v0.1</option>
+                            <option value="mistralai/mistral-7b-instruct-v0.2:free">Mistral 7B v0.2</option>
+                            <option value="mistralai/mistral-7b-instruct-v0.3:free">Mistral 7B v0.3</option>
+                            <option value="mistralai/pixtral-12b:free">Pixtral 12B Vision</option>
+                        </optgroup>
+                        <optgroup label="Google">
+                            <option value="google/gemma-2-9b-it:free">Gemma 2 9B</option>
+                            <option value="google/gemma-7b-it:free">Gemma 7B</option>
+                        </optgroup>
+                        <optgroup label="Qwen">
+                            <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B</option>
+                            <option value="qwen/qwen-2.5-32b-instruct:free">Qwen 2.5 32B</option>
+                            <option value="qwen/qwen-2.5-14b-instruct:free">Qwen 2.5 14B</option>
+                            <option value="qwen/qwen-2.5-7b-instruct:free">Qwen 2.5 7B</option>
+                            <option value="qwen/qwen-2.5-3b-instruct:free">Qwen 2.5 3B</option>
+                            <option value="qwen/qwen-2.5-1.5b-instruct:free">Qwen 2.5 1.5B</option>
+                            <option value="qwen/qwen-2.5-0.5b-instruct:free">Qwen 2.5 0.5B</option>
+                            <option value="qwen/qwen-2-7b-instruct:free">Qwen 2 7B</option>
+                        </optgroup>
+                        <optgroup label="Microsoft">
+                            <option value="microsoft/phi-3.5-mini-128k-instruct:free">Phi 3.5 Mini</option>
+                            <option value="microsoft/phi-3-mini-128k-instruct:free">Phi 3 Mini</option>
+                            <option value="microsoft/phi-3-medium-128k-instruct:free">Phi 3 Medium</option>
+                        </optgroup>
+                        <optgroup label="Nous Research">
+                            <option value="nousresearch/hermes-3-llama-3.1-405b:free">Hermes 3 405B</option>
+                            <option value="nousresearch/hermes-3-llama-3.1-70b:free">Hermes 3 70B</option>
+                        </optgroup>
+                        <optgroup label="Vision/Multimodal">
+                            <option value="qwen/qvq-72b-preview:free">QVQ 72B Vision</option>
+                            <option value="qwen/qwen-2-vl-72b-instruct:free">Qwen 2 VL 72B</option>
+                            <option value="x-ai/grok-vision-beta:free">Grok Vision Beta</option>
+                        </optgroup>
+                        <optgroup label="Outros">
+                            <option value="openchat/openchat-7b:free">OpenChat 7B</option>
+                            <option value="gryphe/mythomist-7b:free">MythoMist 7B</option>
+                            <option value="undi95/toppy-m-7b:free">Toppy M 7B</option>
+                            <option value="huggingfaceh4/zephyr-7b-beta:free">Zephyr 7B</option>
+                            <option value="liquid/lfm-40b:free">LFM 40B</option>
+                            <option value="inflection/inflection-3-pi">Inflection 3 Pi</option>
+                            <option value="inflection/inflection-3-productivity">Inflection 3 Productivity</option>
+                        </optgroup>
+                        <optgroup label="Mistral Extras">
+                            <option value="mistralai/ministral-8b:free">Ministral 8B</option>
+                            <option value="mistralai/ministral-3b:free">Ministral 3B</option>
+                            <option value="mistralai/codestral-mamba">Codestral Mamba</option>
+                        </optgroup>
+                        <optgroup label="Meta Extras">
+                            <option value="meta-llama/llama-guard-2-8b">Llama Guard 2 8B</option>
+                        </optgroup>
+                        <optgroup label="Qwen Extras">
+                            <option value="qwen/qwen-2-1.5b-instruct:free">Qwen 2 1.5B</option>
+                            <option value="qwen/qwen-2-0.5b-instruct:free">Qwen 2 0.5B</option>
+                        </optgroup>
+                        <optgroup label="Community Models">
+                            <option value="thedrummer/rocinante-12b">Rocinante 12B</option>
+                            <option value="eva-unit-01/eva-qwen-2.5-14b">EVA Qwen 2.5 14B</option>
+                            <option value="anthracite-org/magnum-v4-72b">Magnum v4 72B</option>
+                            <option value="sao10k/l3.1-euryale-70b">L3.1 Euryale 70B</option>
+                            <option value="nousresearch/hermes-2-theta-llama-3-8b">Hermes 2 Theta Llama 8B</option>
+                            <option value="nousresearch/hermes-2-pro-llama-3-8b">Hermes 2 Pro Llama 8B</option>
+                        </optgroup>
+                        <optgroup label="Experimentais">
+                            <option value="google/gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro Exp</option>
+                            <option value="google/gemini-exp-1206:free">Gemini Exp 1206</option>
+                            <option value="google/gemini-exp-1121:free">Gemini Exp 1121</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="header-actions">
+                    <!-- Future actions -->
+                </div>
+            </header>
+
+            <!-- Chat Container -->
+            <div class="chat-container">
+                <div class="chat-messages" id="messages">
+                    <div class="message assistant">
+                        <div class="message-avatar">AI</div>
+                        <div class="message-content">
+                            <p>Olá! Como posso ajudar você hoje?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="messageInput"
+                            placeholder="Envie uma mensagem..."
+                            rows="1"
+                        ></textarea>
+                        <button class="send-button" id="sendButton">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 8l6-6v4h6v4h-6v4z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuration - usando backend seguro
+        const API_URL = '/api/chat'; // Backend proxy seguro
+
+        // State
+        let messages = [{
+            role: 'system',
+            content: 'You are a helpful AI assistant. Respond in Portuguese.'
+        }];
+
+        // Elements
+        const messagesContainer = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const modelSelect = document.getElementById('modelSelect');
+        const modelName = document.querySelector('.model-name');
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = messageInput.scrollHeight + 'px';
+        });
+
+        // Update model display
+        modelSelect.addEventListener('change', () => {
+            modelName.textContent = modelSelect.options[modelSelect.selectedIndex].text;
+        });
+
+        // Add message to UI
+        function addMessage(content, role = 'user') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${role === 'user' ? 'Você' : 'AI'}</div>
+                <div class="message-content">
+                    <p>${content}</p>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message assistant';
+            typingDiv.id = 'typing';
+            
+            typingDiv.innerHTML = `
+                <div class="message-avatar">AI</div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTyping() {
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+        }
+
+        // Send message
+        async function sendMessage() {
+            const content = messageInput.value.trim();
+            if (!content) return;
+
+            // Clear input
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Add user message
+            addMessage(content, 'user');
+            messages.push({ role: 'user', content });
+
+            // Show typing
+            showTyping();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: modelSelect.value,
+                        messages: messages.slice(-10),
+                        temperature: 0.7,
+                        max_tokens: 1000
+                    })
+                });
+
+                hideTyping();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.choices[0].message.content;
+                
+                addMessage(aiResponse, 'assistant');
+                messages.push({ role: 'assistant', content: aiResponse });
+
+            } catch (error) {
+                hideTyping();
+                addMessage('Desculpe, ocorreu um erro. Tente novamente.', 'assistant');
+            }
+
+            // Re-enable input
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.focus();
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // New chat button
+        document.querySelector('.new-chat-btn').addEventListener('click', () => {
+            messagesContainer.innerHTML = `
+                <div class="message assistant">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <p>Olá! Como posso ajudar você hoje?</p>
+                    </div>
+                </div>
+            `;
+            messages = [messages[0]]; // Keep system message
+        });
+
+        // Focus on load
+        messageInput.focus();
+    </script>
+</body>
+</html>
