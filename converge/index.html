@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manual de Fluxo de Atendimento - Converge Resolve - Câmara de Mediação, Conciliação e Arbitragem">
+    <meta name="keywords" content="mediação, conciliação, arbitragem, converge resolve, câmara privada, resolução de conflitos">
+    <meta name="author" content="Converge Resolve">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://myfablab.online/converge/">
+    <meta property="og:title" content="Manual de Fluxo - Converge Resolve">
+    <meta property="og:description" content="Câmara de Mediação, Conciliação e Arbitragem - 100% Digital">
+    
+    <title>Manual de Fluxo de Atendimento - Converge Resolve</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #60a5fa;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --bg-light: #f8fafc;
+            --bg-white: #ffffff;
+            --border-color: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+        }
+        
+        /* Link voltar */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .back-link:hover {
+            background: var(--secondary-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--bg-white);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Header Styles */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            margin: -20px -20px 40px -20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .logo {
+            width: 200px;
+            height: 80px;
+            background-color: white;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        /* Navigation */
+        .nav {
+            background-color: var(--bg-white);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        
+        .nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: var(--bg-white);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .subsection-title {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin: 20px 0 15px 0;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .card-content {
+            color: var(--text-secondary);
+        }
+        
+        .card-content ul {
+            list-style-position: inside;
+            margin-left: 20px;
+        }
+        
+        /* Flowchart Styles */
+        .flowchart {
+            margin: 30px 0;
+            padding: 30px;
+            background-color: var(--bg-light);
+            border-radius: 10px;
+        }
+        
+        .flow-step {
+            background-color: var(--bg-white);
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .flow-step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .flow-step-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .flow-step-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .grid-item {
+            background-color: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background-color: var(--secondary-color);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding: 20px;
+            width: 45%;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+        }
+        
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+            text-align: left;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            top: 25px;
+        }
+        
+        .timeline-item:nth-child(odd)::before {
+            right: -8px;
+        }
+        
+        .timeline-item:nth-child(even)::before {
+            left: -8px;
+        }
+        
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 2px;
+        }
+        
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .table th {
+            background-color: var(--bg-light);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .table tr:hover {
+            background-color: var(--bg-light);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        /* Print Styles */
+        @media print {
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .header {
+                margin: 0;
+                page-break-after: avoid;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            .flowchart {
+                page-break-inside: avoid;
+            }
+            
+            .nav, .back-link {
+                display: none;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .back-link {
+                top: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                width: calc(100% - 40px);
+                margin-left: 40px !important;
+                text-align: left !important;
+            }
+            
+            .timeline-item::before {
+                left: -28px !important;
+            }
+            
+            .nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Link para voltar ao site principal -->
+    <a href="../" class="back-link">← Voltar ao MyFabLab</a>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">CONVERGE RESOLVE</div>
+            <h1>Manual de Fluxo de Atendimento</h1>
+            <p>Câmara de Mediação, Conciliação e Arbitragem</p>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="nav">
+            <ul>
+                <li><a href="#personas">Personas</a></li>
+                <li><a href="#fluxograma">Fluxograma</a></li>
+                <li><a href="#especialidades">Especialidades</a></li>
+                <li><a href="#digital">Sistema Digital</a></li>
+                <li><a href="#custos">Custos e Prazos</a></li>
+                <li><a href="#diferenciais">Diferenciais</a></li>
+                <li><a href="#contatos">Contatos</a></li>
+                <li><a href="#compliance">Compliance</a></li>
+            </ul>
+        </nav>
+        
+        <!-- Seção 1: Estrutura de Personas -->
+        <div class="section" id="personas">
+            <h2 class="section-title">1. ESTRUTURA DE PERSONAS</h2>
+            
+            <div class="grid">
+                <div class="grid-item">
+                    <h3 class="card-title">Presidente/Diretora</h3>
+                    <p><strong>Dra. Nalian Borges Cintra Machado</strong></p>
+                    <div class="card-content">
+                        <ul>
+                            <li>Gestão estratégica e técnica</li>
+                            <li>Juízo de admissibilidade</li>
+                            <li>Nomeação de mediadores</li>
+                            <li>Relações institucionais</li>
+                            <li>Decisões sobre casos omissos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="grid-item">
+                    <h3 class="card-title">Secretaria Geral</h3>
+                    <div class="card-content">
+                        <ul>
+                            <li>Administração processual</li>
+                            <li>Protocolo de requerimentos</li>
+                            <li>Convites às partes (5 dias)</li>
+                            <li>Gestão da plataforma online</li>
+                            <li>Comunicações oficiais</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="grid-item">
+                    <h3 class="card-title">Representantes Administrativos</h3>
+                    <div class="card-content">
+                        <ul>
+                            <li>Condução de pré-mediações</li>
+                            <li>Reuniões informativas</li>
+                            <li>Orientação sobre custos</li>
+                            <li>Verificação de poderes</li>
+                            <li>Triagem de casos</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="grid-item">
+                    <h3 class="card-title">Corpo de Especialistas</h3>
+                    <div class="card-content">
+                        <span class="badge badge-primary">Mediadores</span>
+                        <span class="badge badge-primary">Árbitros</span>
+                        <span class="badge badge-primary">Negociadores</span>
+                        <span class="badge badge-success">Recuperação Judicial</span>
+                        <span class="badge badge-warning">Peritos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 2: Fluxograma Principal -->
+        <div class="section" id="fluxograma">
+            <h2 class="section-title">2. FLUXOGRAMA DETALHADO</h2>
+            
+            <h3 class="subsection-title">FASE 1: Requerimento e Admissibilidade</h3>
+            <div class="flowchart">
+                <div class="flow-step">
+                    <div class="flow-step-title">ENTRADA DE CASOS</div>
+                    <div class="flow-step-content">
+                        • Solicitação via Site<br>
+                        • Nomeação Judicial (TJMT)<br>
+                        • Indicação CRECI-MT<br>
+                        • Demanda Empresarial
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-step-title">ANÁLISE PRESIDENTE</div>
+                    <div class="flow-step-content">
+                        Juízo de Admissibilidade<br>
+                        <span class="badge badge-success">Aprovado</span>
+                        <span class="badge badge-warning">Recusado</span>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-step-title">SECRETARIA GERAL</div>
+                    <div class="flow-step-content">
+                        Convite às Partes<br>
+                        Prazo: 5 dias úteis
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">FASE 2: Pré-Mediação</h3>
+            <div class="flowchart">
+                <div class="flow-step">
+                    <div class="flow-step-title">PRÉ-MEDIAÇÃO ONLINE</div>
+                    <div class="flow-step-content">
+                        Plataforma 100% Virtual<br>
+                        Até 2 horas gratuitas
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-step-title">REUNIÕES SEPARADAS</div>
+                    <div class="flow-step-content">
+                        Esclarecimentos individuais<br>
+                        Definição de expectativas
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="flow-step-title">DEFINIÇÕES FINANCEIRAS</div>
+                    <div class="flow-step-content">
+                        • Valor da causa<br>
+                        • Taxa de registro<br>
+                        • Honorários do mediador
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 3: Especialidades -->
+        <div class="section" id="especialidades">
+            <h2 class="section-title">3. ESPECIALIDADES CONVERGE RESOLVE</h2>
+            
+            <div class="card">
+                <h3 class="card-title">Recuperação Judicial</h3>
+                <div class="card-content">
+                    <p><strong>Fluxo Específico:</strong></p>
+                    <ol>
+                        <li>Nomeação pelo Juízo da RJ</li>
+                        <li>Mediação entre recuperanda e classes de credores</li>
+                        <li>Custos: 100% por conta da recuperanda</li>
+                        <li>Foco: Viabilidade do plano de recuperação</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Conflitos Imobiliários (CRECI-MT)</h3>
+                <div class="card-content">
+                    <p><strong>Atendimento Especializado:</strong></p>
+                    <ul>
+                        <li>Suporte nos escritórios CRECI interior</li>
+                        <li>Infraestrutura compartilhada</li>
+                        <li>Valores reduzidos por convênio</li>
+                        <li>Mediação em compra/venda/locação</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Empresarial Geral</h3>
+                <div class="card-content">
+                    <span class="badge badge-primary">Societário</span>
+                    <span class="badge badge-primary">Contratos Comerciais</span>
+                    <span class="badge badge-primary">Reestruturação</span>
+                    <span class="badge badge-primary">Disputas entre Sócios</span>
+                    <span class="badge badge-primary">Sucessão Empresarial</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 4: Sistema Digital -->
+        <div class="section" id="digital">
+            <h2 class="section-title">4. PROCEDIMENTOS DIGITAIS</h2>
+            
+            <h3 class="subsection-title">Sistema 100% Online</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <h4 class="card-title">Peticionamento</h4>
+                    <p>www.convergeresolve.com.br</p>
+                </div>
+                <div class="grid-item">
+                    <h4 class="card-title">Comunicações</h4>
+                    <p>E-mail com confirmação de leitura</p>
+                </div>
+                <div class="grid-item">
+                    <h4 class="card-title">Sessões</h4>
+                    <p>Videoconferência segura e criptografada</p>
+                </div>
+                <div class="grid-item">
+                    <h4 class="card-title">Assinaturas</h4>
+                    <p>Digital/Eletrônica com validade jurídica</p>
+                </div>
+            </div>
+            
+            <h3 class="subsection-title">Segurança e Conformidade</h3>
+            <div class="card">
+                <div class="card-content">
+                    <span class="badge badge-success">LGPD Compliance</span>
+                    <span class="badge badge-success">Cibersegurança</span>
+                    <span class="badge badge-success">Sigilo Processual</span>
+                    <span class="badge badge-success">Gravação Autorizada</span>
+                    <span class="badge badge-success">Certificados ICP-Brasil</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 5: Custos e Prazos -->
+        <div class="section" id="custos">
+            <h2 class="section-title">5. TABELA DE CUSTOS E PRAZOS</h2>
+            
+            <h3 class="subsection-title">Taxas Administrativas</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tipo de Taxa</th>
+                        <th>Descrição</th>
+                        <th>Observações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Taxa de Registro</td>
+                        <td>Valor inicial único</td>
+                        <td>Não reembolsável</td>
+                    </tr>
+                    <tr>
+                        <td>Taxa de Administração</td>
+                        <td>Mensal após 1º mês</td>
+                        <td>Conforme tabela vigente</td>
+                    </tr>
+                    <tr>
+                        <td>Honorários Mediador</td>
+                        <td>Por hora/sessão</td>
+                        <td>Mínimo 2 sessões</td>
+                    </tr>
+                    <tr>
+                        <td>Procedimentos Internacionais</td>
+                        <td>Acréscimo de 15%</td>
+                        <td>Sobre valores base</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3 class="subsection-title">Prazos Processuais</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Convite Inicial</h4>
+                    <p><strong>5 dias</strong></p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Resposta ao Convite</h4>
+                    <p><strong>30 dias</strong></p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Questionário Mediador</h4>
+                    <p><strong>5 dias</strong></p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Protocolo Judicial</h4>
+                    <p><strong>5 dias úteis</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 6: Diferenciais -->
+        <div class="section" id="diferenciais">
+            <h2 class="section-title">6. DIFERENCIAIS CONVERGE RESOLVE</h2>
+            
+            <div class="grid">
+                <div class="grid-item">
+                    <h3 class="card-title">Vantagens Competitivas</h3>
+                    <div class="card-content">
+                        <p>✓ 100% Virtual - Economia de tempo</p>
+                        <p>✓ Especialização empresarial</p>
+                        <p>✓ Convênios institucionais</p>
+                        <p>✓ Flexibilidade de horários</p>
+                        <p>✓ Custos reduzidos</p>
+                    </div>
+                </div>
+                
+                <div class="grid-item">
+                    <h3 class="card-title">Indicadores de Qualidade</h3>
+                    <div class="card-content">
+                        <p>📊 Celeridade: 30-60 dias média</p>
+                        <p>🔒 Segurança: Plataforma criptografada</p>
+                        <p>✅ Eficácia: Alta taxa de acordos</p>
+                        <p>🌐 Acessibilidade: Atendimento nacional</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 7: Contatos -->
+        <div class="section" id="contatos">
+            <h2 class="section-title">7. COMUNICAÇÃO E CANAIS</h2>
+            
+            <div class="card">
+                <h3 class="card-title">Contatos Principais</h3>
+                <div class="card-content">
+                    <p><strong>Site:</strong> www.convergeresolve.com.br</p>
+                    <p><strong>E-mail:</strong> contato@convergeresolve.com.br</p>
+                    <p><strong>WhatsApp Business:</strong> Disponível no site</p>
+                    <p><strong>Sede:</strong> Av. Érico Preza, 96 - Jardim Itália, Cuiabá-MT</p>
+                    <p><strong>CEP:</strong> 78.060-758</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title">Horário de Funcionamento</h3>
+                <div class="card-content">
+                    <p>Segunda a Sexta: 8h às 18h</p>
+                    <p>Recesso: 22/dez a 05/jan</p>
+                    <p>Audiências: Conforme disponibilidade das partes</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção 8: Compliance -->
+        <div class="section" id="compliance">
+            <h2 class="section-title">8. COMPLIANCE E GOVERNANÇA</h2>
+            
+            <div class="grid">
+                <div class="grid-item">
+                    <h3 class="card-title">Estrutura Legal</h3>
+                    <div class="card-content">
+                        <p><strong>CNPJ:</strong> 44.199.046/0001-45</p>
+                        <p><strong>Regulamento:</strong> Próprio</p>
+                        <p><strong>Código de Ética:</strong> Vigente</p>
+                        <p><strong>LGPD:</strong> Compliance total</p>
+                    </div>
+                </div>
+                
+                <div class="grid-item">
+                    <h3 class="card-title">Certificações</h3>
+                    <div class="card-content">
+                        <span class="badge badge-success">Câmara Privada CNJ</span>
+                        <span class="badge badge-success">Parceria TJMT</span>
+                        <span class="badge badge-success">Convênio CRECI-MT</span>
+                        <span class="badge badge-success">Associações Especializadas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>CONVERGE RESOLVE</strong></p>
+            <p>Câmara de Mediação, Conciliação e Arbitragem</p>
+            <p>© 2024 Converge Resolve - Todos os direitos reservados</p>
+            <p><a href="https://www.convergeresolve.com.br" style="color: var(--primary-color);">www.convergeresolve.com.br</a></p>
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid var(--border-color);">
+            <p style="font-size: 0.9rem;">Hospedado em <a href="http://myfablab.online" style="color: var(--primary-color);">MyFabLab</a></p>
+        </div>
+    </div>
+    
+    <!-- Smooth Scroll -->
+    <script>
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
